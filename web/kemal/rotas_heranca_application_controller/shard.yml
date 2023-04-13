@@ -1,0 +1,17 @@
+name: web_app
+version: 0.1.0
+
+authors:
+  - Heitor Carneiro <heitor.carneiro@contabilizei.com.br>
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+
+targets:
+  web_app:
+    main: src/web_app.cr
+
+crystal: 1.7.3
+
+license: MIT
