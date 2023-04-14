@@ -1,0 +1,15 @@
+# https://www.2n.pl/blog/using-docker-for-rails-development
+x-my-app: &my_app
+ build: .
+ volumes:
+   - .:/myapp
+ tty: true # for binding.pry
+ stdin_open: true # for binding.pry
+
+services:
+ web:
+   <<: *my_app
+   container_name: web
+   command: bash -c "rm -f tmp/pids/server.pid && bash"
+   ports:
+     - "3000:3000"
