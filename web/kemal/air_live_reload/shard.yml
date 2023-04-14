@@ -1,0 +1,17 @@
+name: web_kamal
+version: 0.1.0
+
+authors:
+  - Heitor Guerra Carneiro <heitorgcarneiro@gmail.com>
+
+targets:
+  web_kamal:
+    main: src/web_kamal.cr
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+
+crystal: 1.7.3
+
+license: MIT
