@@ -1,0 +1,19 @@
+name: crymagick
+version: 0.1.0
+
+# authors:
+#   - name <email@example.com>
+
+# description: |
+#   Short description of crymagick
+
+dependencies:
+  crymagick:
+    github: imdrasil/crymagick
+    version: 0.2.3
+
+# development_dependencies:
+#   webmock:
+#     github: manastech/webmock.cr
+
+# license: MIT

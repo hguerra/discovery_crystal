@@ -1,0 +1,6 @@
+version: 2.0
+shards:
+  crymagick:
+    git: https://github.com/imdrasil/crymagick.git
+    version: 0.2.3
+
