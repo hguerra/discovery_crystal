@@ -1,0 +1,6 @@
+version: 2.0
+shards:
+  goban:
+    git: https://github.com/soya-daizu/goban.git
+    version: 1.4.1+git.commit.b9412b8c21f0c0e5c100b18d8ecf4a732c9eb0ba
+
