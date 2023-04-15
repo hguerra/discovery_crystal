@@ -1,0 +1,21 @@
+name: sam_task_manager
+version: 0.1.0
+
+# authors:
+#   - name <email@example.com>
+
+# description: |
+#   Short description of sam_task_manager
+
+dependencies:
+  sam:
+    github: imdrasil/sam.cr
+    version: 0.4.2
+  i18n:
+    github: crimson-knight/i18n.cr
+
+# development_dependencies:
+#   webmock:
+#     github: manastech/webmock.cr
+
+# license: MIT

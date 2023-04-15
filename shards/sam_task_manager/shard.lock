@@ -1,0 +1,10 @@
+version: 2.0
+shards:
+  i18n:
+    git: https://github.com/crimson-knight/i18n.cr.git
+    version: 0.4.1
+
+  sam:
+    git: https://github.com/imdrasil/sam.cr.git
+    version: 0.4.2
+

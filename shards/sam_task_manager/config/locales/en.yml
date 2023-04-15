@@ -1,0 +1,2 @@
+message:
+  new: "New message: %{text}"

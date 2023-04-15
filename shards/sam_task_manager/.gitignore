@@ -1,0 +1,7 @@
+/docs/
+/lib/
+/.shards/
+lib
+*.dwarf
+*.db
+*.sqlite3
