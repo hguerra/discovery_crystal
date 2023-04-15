@@ -1,0 +1,21 @@
+name: static_tool_ameba
+version: 0.1.0
+
+# authors:
+#   - name <email@example.com>
+
+# description: |
+#   Short description of static_tool_ameba
+
+# dependencies:
+#   pg:
+#     github: will/crystal-pg
+#     version: "~> 0.5"
+
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
+  webmock:
+    github: manastech/webmock.cr
+
+# license: MIT
