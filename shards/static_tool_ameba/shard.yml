@@ -15,7 +15,9 @@ version: 0.1.0
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba
-  webmock:
-    github: manastech/webmock.cr
+  backtracer:
+    github: Sija/backtracer.cr
+  debug:
+    github: Sija/debug.cr
 
 # license: MIT

@@ -4,7 +4,11 @@ shards:
     git: https://github.com/crystal-ameba/ameba.git
     version: 1.4.3
 
-  webmock:
-    git: https://github.com/manastech/webmock.cr.git
-    version: 0.14.0
+  backtracer:
+    git: https://github.com/sija/backtracer.cr.git
+    version: 1.2.2
+
+  debug:
+    git: https://github.com/sija/debug.cr.git
+    version: 2.0.2
 
