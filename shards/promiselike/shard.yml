@@ -1,0 +1,20 @@
+name: promiselike
+version: 0.1.0
+
+# authors:
+#   - name <email@example.com>
+
+# description: |
+#   Short description of promiselike
+
+dependencies:
+  promise:
+    github: spider-gazelle/promise
+  tasker:
+    github: spider-gazelle/tasker
+
+# development_dependencies:
+#   webmock:
+#     github: manastech/webmock.cr
+
+# license: MIT

@@ -1,0 +1,18 @@
+name: fiber_pool
+version: 0.1.0
+
+# authors:
+#   - name <email@example.com>
+
+# description: |
+#   Short description of fiber_pool
+
+dependencies:
+  fiberpool:
+    github: akitaonrails/fiberpool
+
+# development_dependencies:
+#   webmock:
+#     github: manastech/webmock.cr
+
+# license: MIT
