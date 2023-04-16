@@ -1,0 +1,37 @@
+FROM crystallang/crystal:1.8.0 AS builder
+
+WORKDIR /usr/src/app
+COPY ./shard.yml ./shard.yml
+COPY ./shard.lock ./shard.lock
+RUN shards install --production
+
+COPY ./bin/ ./bin/
+COPY ./config/ ./config/
+COPY ./public/ ./public/
+COPY ./src/ ./src/
+
+RUN crystal build -o ./server bin/server.cr --release
+
+
+FROM heitorcarneiro/kong:3.2.2-ubuntu
+LABEL maintainer="Heitor Carneiro <heitorgcarneiro@gmail.com>"
+
+USER root
+RUN apt-get update -qq
+RUN apt-get install -y -qq libevent-dev
+RUN mkdir -p /usr/src/app
+
+WORKDIR /usr/src/app
+COPY ./config/locales/ ./config/locales
+COPY ./public/ ./public/
+COPY ./.env ./.env
+COPY ./docker-entrypoint.api_gateway.sh ./docker-entrypoint.sh
+RUN chmod 755 ./docker-entrypoint.sh
+
+COPY --from=builder /usr/src/app/server .
+
+RUN chown -R kong:kong /usr/src/app
+USER kong
+
+EXPOSE 8080
+ENTRYPOINT ["./docker-entrypoint.sh"]

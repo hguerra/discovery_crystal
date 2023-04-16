@@ -1,0 +1,46 @@
+version: 2.0
+shards:
+  ameba:
+    git: https://github.com/crystal-ameba/ameba.git
+    version: 1.4.3
+
+  backtracer:
+    git: https://github.com/sija/backtracer.cr.git
+    version: 1.2.2
+
+  debug:
+    git: https://github.com/sija/debug.cr.git
+    version: 2.0.2
+
+  exception_page:
+    git: https://github.com/crystal-loot/exception_page.git
+    version: 0.3.0
+
+  i18n:
+    git: https://github.com/crystal-i18n/i18n.git
+    version: 0.2.1
+
+  kemal:
+    git: https://github.com/kemalcr/kemal.git
+    version: 1.4.0
+
+  kemal-csrf:
+    git: https://github.com/kemalcr/kemal-csrf.git
+    version: 1.0.0
+
+  kemal-session:
+    git: https://github.com/kemalcr/kemal-session.git
+    version: 1.0.0
+
+  radix:
+    git: https://github.com/luislavena/radix.git
+    version: 0.4.1
+
+  sentry:
+    git: https://github.com/samueleaton/sentry.git
+    version: 0.5.0
+
+  spec-kemal:
+    git: https://github.com/kemalcr/spec-kemal.git
+    version: 1.0.0
+

@@ -1,0 +1,10 @@
+Globs:
+  - "**/*.cr"
+  - "!lib"
+
+Lint/UselessAssign:
+  Description: Disallows useless variable assignments
+  Excluded:
+    - "**/*_controller.cr"
+  Enabled: true
+  Severity: Warning

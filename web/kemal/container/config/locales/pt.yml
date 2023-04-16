@@ -1,0 +1,7 @@
+pt:
+  simple:
+    translation: "Essa é uma tradução simples"
+    interpolation: "Oi, %{name}!"
+    pluralization:
+      one: "Item um"
+      other: "%{count} itens"

@@ -1,0 +1,11 @@
+.idea/
+/docs/
+/lib/
+/tmp/
+/.shards/
+*.dwarf
+bin/air
+bin/ameba
+.env
+Dockerfile
+docker-entrypoint.sh

@@ -1,0 +1,98 @@
+require "log"
+require "json"
+
+LOGGER = Log.for("main")
+
+struct GoogleLogFormat < Log::StaticFormatter
+  def custom_timestamp
+    @entry.timestamp.to_rfc3339
+  end
+
+  def custom_severity
+    case @entry.severity
+    in Log::Severity::Trace  then "DEFAULT"
+    in Log::Severity::Debug  then "DEBUG"
+    in Log::Severity::Info   then "INFO"
+    in Log::Severity::Notice then "NOTICE"
+    in Log::Severity::Warn   then "WARNING"
+    in Log::Severity::Error  then "ERROR"
+    in Log::Severity::Fatal  then "EMERGENCY"
+    in Log::Severity::None   then "DEBUG"
+    end
+  end
+
+  def custom_message
+    message = @entry.message
+
+    if @entry.source.size > 0
+      message = "#{@entry.source}: #{message}"
+    end
+
+    if ex = @entry.exception
+      message = "#{message}\n#{ex.inspect_with_backtrace}"
+    end
+
+    message
+  end
+
+  def custom_labels
+    unless @entry.data.empty?
+      labels = Hash(String, String).new
+      @entry.data.each do |(k, v)|
+        labels[k.to_s] = v.to_s
+      end
+      labels
+    end
+  end
+
+  def custom_operations
+    unless @entry.context.empty?
+      operations = Hash(String, String).new
+      @entry.context.each do |(k, v)|
+        operations[k.to_s] = v.to_s
+      end
+      operations
+    end
+  end
+
+  def custom_span_id
+    unless @entry.data.empty?
+      value = @entry.data[:span_id]?
+      if value
+        return value.to_s
+      end
+    end
+  end
+
+  def custom_trace
+    unless @entry.data.empty?
+      value = @entry.data[:trace]?
+      if value
+        return value.to_s
+      end
+    end
+  end
+
+  def to_json
+    {
+      "time"                             => custom_timestamp,
+      "severity"                         => custom_severity,
+      "message"                          => custom_message,
+      "logging.googleapis.com/labels"    => custom_labels,
+      "logging.googleapis.com/operation" => custom_operations,
+      "logging.googleapis.com/spanId"    => custom_span_id,
+      "logging.googleapis.com/trace"     => custom_trace,
+    }.to_json
+  end
+
+  def run
+    string to_json
+  end
+end
+
+unless is_development
+  Log.setup do |c|
+    backend = Log::IOBackend.new(formatter: GoogleLogFormat)
+    c.bind "*", :info, backend
+  end
+end

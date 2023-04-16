@@ -1,0 +1,41 @@
+name: tasks
+version: 0.1.0
+
+authors:
+  - Heitor Guerra Carneiro <heitorgcarneiro@gmail.com>
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+    version: 1.4.0
+  kemal-session:
+    github: kemalcr/kemal-session
+    version: 1.0.0
+  kemal-csrf:
+    github: kemalcr/kemal-csrf
+    version: 1.0.0
+  i18n:
+    github: crystal-i18n/i18n
+    version: 0.2.1
+
+development_dependencies:
+  ameba:
+    github: crystal-ameba/ameba
+    version: 1.4.3
+  debug:
+    github: Sija/debug.cr
+    version: 2.0.2
+  spec-kemal:
+    github: kemalcr/spec-kemal
+    version: 1.0.0
+  sentry:
+    github: samueleaton/sentry
+    version: ~> 0.5.0
+
+targets:
+  tasks:
+    main: src/tasks.cr
+
+crystal: 1.8.0
+
+license: MIT

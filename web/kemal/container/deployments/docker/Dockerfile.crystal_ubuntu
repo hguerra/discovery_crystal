@@ -1,0 +1,30 @@
+FROM crystallang/crystal:1.8.0 AS builder
+
+WORKDIR /usr/src/app
+COPY ./shard.yml ./shard.yml
+COPY ./shard.lock ./shard.lock
+RUN shards install --production
+
+COPY ./bin/ ./bin/
+COPY ./config/ ./config/
+COPY ./public/ ./public/
+COPY ./src/ ./src/
+
+RUN crystal build -o ./server bin/server.cr --release
+
+
+FROM crystallang/crystal:1.8.0
+LABEL maintainer="Heitor Carneiro <heitorgcarneiro@gmail.com>"
+
+WORKDIR /usr/src/app
+COPY ./config/locales/ ./config/locales
+COPY ./public/ ./public/
+COPY ./.env ./.env
+COPY ./docker-entrypoint.crystal_ubuntu.sh ./docker-entrypoint.sh
+RUN chmod 755 ./docker-entrypoint.sh
+
+COPY --from=builder /usr/src/app/server .
+
+EXPOSE 3001
+EXPOSE 3002
+ENTRYPOINT ["./docker-entrypoint.sh"]

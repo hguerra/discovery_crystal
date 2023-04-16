@@ -1,0 +1,147 @@
+_format_version: '3.0'
+_transform: true
+
+upstreams:
+  - name: health-upstream
+    targets:
+      - target: 'status.cloud.google.com:443'
+        weight: 100
+
+  - name: mock-upstream
+    targets:
+      - target: mockbin.org:80
+        weight: 100
+
+services:
+  - name: health-service
+    protocol: https
+    host: health-upstream
+    port: 443
+    routes:
+      - name: health-route
+        strip_path: true
+        paths:
+          - /gateway/health
+    plugins:
+      - name: kong-path-allow
+        enabled: true
+        config:
+          allow_paths:
+            - /incidents.schema.json
+
+  - name: mock-service
+    protocol: http
+    host: mock-upstream
+    port: 80
+    routes:
+      - name: mock-route
+        strip_path: true
+        paths:
+          - /mock
+    plugins:
+      - name: jwt
+        enabled: true
+        config:
+          secret_is_base64: false
+          run_on_preflight: true
+          maximum_expiration: 1800
+      - name: kong-path-allow
+        enabled: true
+        config:
+          allow_paths:
+            - /request
+      # - name: proxy-cache
+      #   enabled: true
+      #   config:
+      #     content_type:
+      #       - 'application/json; charset=utf-8'
+      #     cache_ttl: 300
+      #     strategy: memory
+      - name: proxy-cache-redis-cluster
+        enabled: true
+        config:
+          response_code:
+            - 200
+          request_method:
+            - GET
+            - HEAD
+          content_type:
+            - 'application/json; charset=utf-8'
+          cache_ttl: 300
+          storage_ttl: 300
+          cluster_nodes_hosts_ports:
+            - '192.168.18.5:6379'
+
+plugins:
+  - name: correlation-id
+    config:
+      header_name: X-Kong-Request-ID
+      generator: uuid#counter
+      echo_downstream: true
+
+  - name: cors
+    enabled: true
+    config:
+      origins:
+        - '*'
+      methods:
+        - GET
+        - HEAD
+        - PUT
+        - PATCH
+        - POST
+        - DELETE
+        - OPTIONS
+      headers:
+        - Origin
+        - Access-Control-Allow-Origin
+        - Access-Control-Allow-Methods
+        - Access-Control-Allow-Headers
+        - Access-Control-Expose-Headers
+        - Access-Control-Request-Headers
+        - Accept
+        - Accept-Version
+        - Access-Control-Max-Age
+        - Authorization
+        - Cache-Control
+        - Content-Length
+        - Content-MD5
+        - Content-Type
+        - Date
+        - User-Agent
+        - X-Auth-Token
+        - X-Kong-Request-ID
+        - X-Cloud-Trace-Context
+      exposed_headers:
+        - Origin
+        - Access-Control-Allow-Origin
+        - Access-Control-Allow-Methods
+        - Access-Control-Allow-Headers
+        - Access-Control-Request-Headers
+        - Access-Control-Expose-Headers
+        - Access-Control-Max-Age
+        - Authorization
+        - Content-Type
+        - Content-Length
+        - X-Auth-Token
+        - X-Kong-Request-ID
+        - X-Cloud-Trace-Context
+      credentials: true
+      max_age: 3600
+      preflight_continue: false
+
+  - name: kong-jwt2header
+    enabled: true
+    config:
+      strip_claims: 'false'
+      token_required: 'false'
+
+consumers:
+  - username: mock-user
+    custom_id: ab4bf4a1-a8bd-4bec-a999-75b1eb281743
+
+jwt_secrets:
+  - consumer: mock-user
+    algorithm: HS256
+    key: a36c3049b36249a3c9f8891cb127243c
+    secret: e71829c351aa4242c2719cbfbe671c09
