@@ -1,0 +1,46 @@
+version: 2.0
+shards:
+  backtracer:
+    git: https://github.com/sija/backtracer.cr.git
+    version: 1.2.2
+
+  baked_file_system:
+    git: https://github.com/schovi/baked_file_system.git
+    version: 0.10.0
+
+  exception_page:
+    git: https://github.com/crystal-loot/exception_page.git
+    version: 0.3.0
+
+  kemal:
+    git: https://github.com/kemalcr/kemal.git
+    version: 1.4.0
+
+  kemal-basic-auth:
+    git: https://github.com/kemalcr/kemal-basic-auth.git
+    version: 1.0.0
+
+  kemal-csrf:
+    git: https://github.com/kemalcr/kemal-csrf.git
+    version: 1.0.0
+
+  kemal-session:
+    git: https://github.com/kemalcr/kemal-session.git
+    version: 1.0.0
+
+  pool:
+    git: https://github.com/ysbaddaden/pool.git
+    version: 0.2.4
+
+  radix:
+    git: https://github.com/luislavena/radix.git
+    version: 0.4.1
+
+  redis:
+    git: https://github.com/stefanwille/crystal-redis.git
+    version: 2.9.1
+
+  sidekiq:
+    git: https://github.com/mperham/sidekiq.cr.git
+    version: 0.7.2
+

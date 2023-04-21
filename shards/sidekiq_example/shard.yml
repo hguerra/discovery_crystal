@@ -1,0 +1,20 @@
+name: sidekiq_example
+version: 0.1.0
+
+authors:
+  - Heitor Guerra Carneiro <heitorgcarneiro@gmail.com>
+
+dependencies:
+  kemal-basic-auth:
+    github: kemalcr/kemal-basic-auth
+  sidekiq:
+    github: mperham/sidekiq.cr
+    version: "0.7.2"
+
+targets:
+  sidekiq_example:
+    main: src/producers.cr
+
+crystal: 1.8.0
+
+license: MIT

@@ -1,0 +1,9 @@
+/docs/
+/lib/
+/bin/
+/.shards/
+lib
+*.dwarf
+*.db
+*.sqlite3
+.docker/

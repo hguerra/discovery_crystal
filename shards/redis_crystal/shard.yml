@@ -1,0 +1,19 @@
+name: redis
+version: 0.1.0
+
+# authors:
+#   - name <email@example.com>
+
+# description: |
+#   Short description of redis
+
+dependencies:
+  redis:
+    github: stefanwille/crystal-redis
+    version: "2.8.0"
+
+# development_dependencies:
+#   webmock:
+#     github: manastech/webmock.cr
+
+# license: MIT
