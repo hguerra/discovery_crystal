@@ -1,0 +1,6 @@
+version: 2.0
+shards:
+  marionette:
+    git: https://github.com/watzon/marionette.git
+    version: 0.3.0+git.commit.3fc516a0f9fd86658d296a3dfbd07e2b2d3bf3a6
+
