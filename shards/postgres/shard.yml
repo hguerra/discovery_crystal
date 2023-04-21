@@ -1,0 +1,20 @@
+name: tren
+version: 0.1.0
+
+# authors:
+#   - name <email@example.com>
+
+# description: |
+#   Short description of tren
+
+dependencies:
+  pg:
+    github: will/crystal-pg
+    version: "0.26"
+
+development_dependencies:
+  micrate:
+    github: amberframework/micrate
+    version: "0.15.0"
+
+# license: MIT

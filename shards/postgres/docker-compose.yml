@@ -1,0 +1,29 @@
+version: '3'
+
+networks:
+  services_network:
+    external: false
+
+services:
+  postgres:
+    image: postgres:14-alpine
+    container_name: tasks_postgres
+    environment:
+      - POSTGRES_DB=tasks
+      - POSTGRES_USER=tasks
+      - POSTGRES_PASSWORD=tasks
+    ports:
+      - '5432:5432'
+    volumes:
+      - '.docker/postgres:/var/lib/postgresql/data'
+    networks:
+      - services_network
+
+  redis:
+    image: redis:6-alpine
+    command: redis-server
+    container_name: tasks_redis
+    ports:
+      - '6379:6379'
+    networks:
+      - services_network
