@@ -1,0 +1,378 @@
+---
+openapi: 3.0.3
+info:
+  description: App description for OpenAPI docs
+  title: Spider-Gazelle
+  version: 2.0.0
+paths:
+  /:
+    summary: description of the welcome klass
+    get:
+      summary: A welcome message
+      tags:
+      - Welcome
+      operationId: App::Welcome_index
+      parameters: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json: &1
+              schema:
+                $ref: '#/components/schemas/String'
+            application/yaml: *1
+            text/html:
+              schema:
+                type: string
+        406:
+          description: Not Acceptable
+          content:
+            application/json: &2
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ContentResponse'
+            application/yaml: *2
+            text/html:
+              schema:
+                type: string
+        415:
+          description: Unsupported Media Type
+          content:
+            application/json: &3
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ContentResponse'
+            application/yaml: *3
+            text/html:
+              schema:
+                type: string
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json: &4
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ParameterResponse'
+            application/yaml: *4
+            text/html:
+              schema:
+                type: string
+        400:
+          description: Bad Request
+          content:
+            application/json: &5
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ParameterResponse'
+            application/yaml: *5
+            text/html:
+              schema:
+                type: string
+  /api/{example}:
+    summary: description of the welcome klass
+    get:
+      summary: For API applications the return value of the function is expected to
+        work with
+      description: 'For API applications the return value of the function is expected
+        to work with
+
+        all of the responder blocks (see application.cr)
+
+        the various responses are returned based on the Accepts header'
+      tags:
+      - Welcome
+      operationId: App::Welcome_api
+      parameters:
+      - name: example
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: Int32
+      responses:
+        200:
+          description: OK
+          content:
+            application/json: &6
+              schema:
+                $ref: '#/components/schemas/NamedTuple_result__Int32_'
+            application/yaml: *6
+            text/html:
+              schema:
+                type: string
+        406:
+          description: Not Acceptable
+          content:
+            application/json: &7
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ContentResponse'
+            application/yaml: *7
+            text/html:
+              schema:
+                type: string
+        415:
+          description: Unsupported Media Type
+          content:
+            application/json: &8
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ContentResponse'
+            application/yaml: *8
+            text/html:
+              schema:
+                type: string
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json: &9
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ParameterResponse'
+            application/yaml: *9
+            text/html:
+              schema:
+                type: string
+        400:
+          description: Bad Request
+          content:
+            application/json: &10
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ParameterResponse'
+            application/yaml: *10
+            text/html:
+              schema:
+                type: string
+    post:
+      summary: For API applications the return value of the function is expected to
+        work with
+      description: 'For API applications the return value of the function is expected
+        to work with
+
+        all of the responder blocks (see application.cr)
+
+        the various responses are returned based on the Accepts header'
+      tags:
+      - Welcome
+      operationId: App::Welcome_api{3}
+      parameters:
+      - name: example
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: Int32
+      responses:
+        200:
+          description: OK
+          content:
+            application/json: &11
+              schema:
+                $ref: '#/components/schemas/NamedTuple_result__Int32_'
+            application/yaml: *11
+            text/html:
+              schema:
+                type: string
+        406:
+          description: Not Acceptable
+          content:
+            application/json: &12
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ContentResponse'
+            application/yaml: *12
+            text/html:
+              schema:
+                type: string
+        415:
+          description: Unsupported Media Type
+          content:
+            application/json: &13
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ContentResponse'
+            application/yaml: *13
+            text/html:
+              schema:
+                type: string
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json: &14
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ParameterResponse'
+            application/yaml: *14
+            text/html:
+              schema:
+                type: string
+        400:
+          description: Bad Request
+          content:
+            application/json: &15
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ParameterResponse'
+            application/yaml: *15
+            text/html:
+              schema:
+                type: string
+  /api/other/route:
+    summary: description of the welcome klass
+    get:
+      summary: For API applications the return value of the function is expected to
+        work with
+      description: 'For API applications the return value of the function is expected
+        to work with
+
+        all of the responder blocks (see application.cr)
+
+        the various responses are returned based on the Accepts header'
+      tags:
+      - Welcome
+      operationId: App::Welcome_api{2}
+      parameters:
+      - name: example
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: Int32
+      responses:
+        200:
+          description: OK
+          content:
+            application/json: &16
+              schema:
+                $ref: '#/components/schemas/NamedTuple_result__Int32_'
+            application/yaml: *16
+            text/html:
+              schema:
+                type: string
+        406:
+          description: Not Acceptable
+          content:
+            application/json: &17
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ContentResponse'
+            application/yaml: *17
+            text/html:
+              schema:
+                type: string
+        415:
+          description: Unsupported Media Type
+          content:
+            application/json: &18
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ContentResponse'
+            application/yaml: *18
+            text/html:
+              schema:
+                type: string
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json: &19
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ParameterResponse'
+            application/yaml: *19
+            text/html:
+              schema:
+                type: string
+        400:
+          description: Bad Request
+          content:
+            application/json: &20
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ParameterResponse'
+            application/yaml: *20
+            text/html:
+              schema:
+                type: string
+  /openapi:
+    summary: description of the welcome klass
+    get:
+      summary: returns the OpenAPI representation of this service
+      tags:
+      - Welcome
+      operationId: App::Welcome_openapi
+      parameters: []
+      responses:
+        200:
+          description: OK
+          content:
+            application/json: &21
+              schema:
+                $ref: '#/components/schemas/YAML__Any'
+            application/yaml: *21
+            text/html:
+              schema:
+                type: string
+        406:
+          description: Not Acceptable
+          content:
+            application/json: &22
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ContentResponse'
+            application/yaml: *22
+            text/html:
+              schema:
+                type: string
+        415:
+          description: Unsupported Media Type
+          content:
+            application/json: &23
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ContentResponse'
+            application/yaml: *23
+            text/html:
+              schema:
+                type: string
+        422:
+          description: Unprocessable Entity
+          content:
+            application/json: &24
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ParameterResponse'
+            application/yaml: *24
+            text/html:
+              schema:
+                type: string
+        400:
+          description: Bad Request
+          content:
+            application/json: &25
+              schema:
+                $ref: '#/components/schemas/ActionController__Error__ParameterResponse'
+            application/yaml: *25
+            text/html:
+              schema:
+                type: string
+components:
+  schemas:
+    String:
+      type: string
+    NamedTuple_result__Int32_:
+      type: object
+      properties:
+        result:
+          type: integer
+          format: Int32
+      required:
+      - result
+    YAML__Any:
+      type: object
+    ActionController__Error__ContentResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        accepts:
+          type: array
+          items:
+            type: string
+          nullable: true
+      required:
+      - error
+    ActionController__Error__ParameterResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        parameter:
+          type: string
+          nullable: true
+        restriction:
+          type: string
+          nullable: true
+      required:
+      - error

@@ -1,0 +1,10 @@
+services:
+  # The Spider-Gazelle service
+  # run: `podman compose build` to update the service
+  # run: `podman compose up -d` to launch the service
+  sg:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      SG_ENV: "production"

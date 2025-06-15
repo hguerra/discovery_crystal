@@ -1,0 +1,17 @@
+docker build -f Dockerfile.openresty-fat -t openresty-fat .
+
+docker run --rm --name op -d -p 8080:80 openresty-fat
+
+docker exec -it op /bin/sh
+
+
+
+---
+
+docker pull openresty/openresty:1.25.3.2-5-bookworm-fat
+
+docker build -f Dockerfile.openresty-bookworm-fat -t openresty-bookworm-fat .
+
+docker run --rm --name op -d -p 8080:8080 openresty-bookworm-fat
+
+docker exec -it op /bin/bash

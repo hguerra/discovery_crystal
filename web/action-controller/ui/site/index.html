@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-base-200">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plataforma Quero Simular</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-GCNQ2K0F5Q"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-GCNQ2K0F5Q');
+    </script>
+  </head>
+  <body class="h-full">
+
+    <!-- navbar  -->
+    <div class="navbar bg-base-100">
+      <div class="navbar-start">
+        <div class="dropdown">
+          <label tabindex="0" class="btn btn-ghost lg:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+          </label>
+        </div>
+        <a class="btn btn-ghost normal-case text-xl" href="/">Quero Simular</a>
+      </div>
+      <div class="navbar-center hidden lg:flex">
+        <ul class="menu menu-horizontal px-1">
+          <li><a href="/">Início</a></li>
+          <li><a href="/planos.html">Planos</a></li>
+        </ul>
+      </div>
+      <div class="navbar-end">
+        <a class="btn btn-primary mr-5 max-[600px]:btn-sm max-[600px]:mr-1" id="btn-login">Log in</a>
+        <a class="btn btn-primary max-[600px]:btn-sm" id="btn-singup">Sign up</a>
+      </div>
+    </div>
+
+    <div class="w-4/6 mx-auto my-14">
+      <h2 class="text-4xl">Gere um simulado de forma</h2>
+      <h1 class="text-5xl font-bold">Rápida, prática e eficiente</h1>
+
+      <h3 class="text-2xl mt-6">Preparar-se para exames e avaliações nunca foi tão eficiente e acessível quanto agora, graças à nossa inovadora plataforma de Simulados Inteligentes e Correções de Questões, <b>a Quero Simular.</b></h3>
+
+      <img class="w-full h-48 object-cover mt-8 rounded-md" src="/imgs/vestibular.jpg" alt="Flower and sky"/>
+    </div>
+
+    <div class="w-4/6 mx-auto">
+      <div class="chat chat-start">
+        <div class="chat-bubble">Eficiência: <br/> Simulados personalizados gerados instantaneamente, <br/> economizando tempo e esforço na criação manual.</div>
+      </div>
+      <div class="chat chat-end">
+        <div class="chat-bubble">Precisão: <br/> Correções detalhadas e análise profunda de respostas, <br/> fornecendo orientações específicas para melhorias.</div>
+      </div>
+      <div class="chat chat-start">
+        <div class="chat-bubble">Acessibilidade: <br/>Acesso 24/7 a simulações e correções, <br/>permitindo que os estudantes pratiquem a qualquer momento.</div>
+      </div>
+      <div class="chat chat-end">
+        <div class="chat-bubble">Redução de Custos: <br/>Diminuição dos gastos com impressão, <br/>logística e correção manual de provas.</div>
+      </div>
+    </div>
+
+    <div class="hero bg-base-100 my-20">
+      <div class="hero-content py-24 flex-col lg:flex-row-reverse">
+        <img src="/imgs/vestibular-3.jpg" class="max-w-sm rounded-lg shadow-2xl" />
+        <div>
+          <h1 class="text-5xl font-bold">O que é a nossa Plataforma?</h1>
+          <p class="py-6">Imagine uma ferramenta que pode criar simulações de exames personalizadas para atender às suas necessidades únicas de estudo. Além disso, nosso sistema automatizado de correção analisa suas respostas de maneira precisa e fornece feedback detalhado instantaneamente.</p>
+          <button class="btn btn-active btn-primary" id="btn-simular">Faça um Simulado aqui</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero min-h-screen" style="background-image: url(/imgs/vestibular-4.jpg);">
+      <div class="hero-overlay bg-opacity-60"></div>
+      <div class="hero-content text-center text-neutral-content">
+        <div class="max-w-md">
+          <h1 class="mb-5 text-5xl font-bold">Por que Escolher nossa Plataforma?</h1>
+          <p class="mb-5">Estamos comprometidos em fornecer uma solução de preparação para exames que seja inteligente, eficiente e acessível a todos. Com o poder do ChatGPT, nossa plataforma oferece uma experiência de aprendizado personalizada e abrangente, ajudando estudantes a atingir seu máximo potencial acadêmico. Junte-se a nós no futuro da educação e descubra como a tecnologia pode transformar a maneira como você se prepara para o sucesso!.</p>
+          <button class="btn btn-primary" id="btn-get-started">Comece agora</button>
+        </div>
+      </div>
+    </div>
+
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

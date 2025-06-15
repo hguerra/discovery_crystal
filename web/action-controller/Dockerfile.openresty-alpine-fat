@@ -1,0 +1,2 @@
+FROM openresty/openresty:1.25.3.2-5-alpine-fat
+RUN apk update && apk add wget crystal shards && rm -rf /var/cache/apk/*

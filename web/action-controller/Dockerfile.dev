@@ -1,0 +1,77 @@
+FROM crystallang/crystal:1.16-alpine AS crystal-base
+WORKDIR /usr/app
+
+# Create a non-privileged user, defaults are appuser:10001
+ARG IMAGE_UID="10001"
+ENV UID=$IMAGE_UID
+ENV USER=appuser
+
+# See https://stackoverflow.com/a/55757473/12429735
+RUN adduser \
+    --disabled-password \
+    --gecos "" \
+    --home "/nonexistent" \
+    --shell "/sbin/nologin" \
+    --no-create-home \
+    --uid "${UID}" \
+    "${USER}"
+
+# Add dependencies commonly required for building crystal applications
+# hadolint ignore=DL3018
+RUN apk add \
+  --update \
+  --no-cache \
+    gcc \
+    make \
+    autoconf \
+    automake \
+    libtool \
+    patch \
+    ca-certificates \
+    yaml-dev \
+    yaml-static \
+    git \
+    bash \
+    iputils \
+    libelf \
+    gmp-dev \
+    libxml2-dev \
+    musl-dev \
+    pcre-dev \
+    zlib-dev \
+    zlib-static \
+    libunwind-dev \
+    libunwind-static \
+    libevent-dev \
+    libevent-static \
+    libssh2-static \
+    lz4-dev \
+    lz4-static \
+    tzdata \
+    curl
+
+# Already included in the image
+# openssl-dev
+# openssl-libs-static
+
+RUN update-ca-certificates
+
+# Install any additional dependencies
+# RUN apk add libssh2 libssh2-dev
+
+# Install shards for caching
+COPY shard.yml shard.yml
+COPY shard.override.yml shard.override.yml
+COPY shard.lock shard.lock
+RUN shards install --ignore-crystal-version --skip-postinstall --skip-executables
+
+
+# dev image
+FROM crystal-base
+WORKDIR /usr/app
+
+COPY . .
+
+# Run the app binding on port 3000
+EXPOSE 3000
+CMD ["crystal", "./src/app.cr"]

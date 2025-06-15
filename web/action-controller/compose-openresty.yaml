@@ -1,0 +1,16 @@
+networks:
+  service_network:
+    external: false
+
+services:
+  openresty:
+    image: localhost/discovery-openresty:latest
+    container_name: openresty
+    cpu_count: 1
+    mem_limit: 512m
+    ports:
+      - "8080:8080"
+    networks:
+      - service_network
+    volumes:
+      - "./config/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:rw"
