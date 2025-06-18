@@ -1,0 +1,6 @@
+<svg width="200" height="100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="100" fill="#0066cc"/>
+  <text x="100" y="35" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">NGINX</text>
+  <text x="100" y="55" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">+</text>
+  <text x="100" y="75" font-family="Arial, sans-serif" font-size="14" fill="white" text-anchor="middle">Crystal</text>
+</svg>

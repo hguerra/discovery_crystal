@@ -1,0 +1,99 @@
+user  nginx;
+worker_processes  auto;
+
+# Direcionar error_log para stderr (padrão para containers)
+error_log  /dev/stderr notice;
+pid        /run/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    # Log format padrão (mantido para compatibilidade)
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+
+    # Log format JSON seguindo padrão GCP
+    log_format json_escape escape=json '{'
+        '"timestamp": "$time_iso8601",'
+        '"severity": "INFO",'
+        '"httpRequest": {'
+            '"requestMethod": "$request_method",'
+            '"requestUrl": "$request_uri",'
+            '"requestSize": "$request_length",'
+            '"status": $status,'
+            '"responseSize": "$body_bytes_sent",'
+            '"userAgent": "$http_user_agent",'
+            '"remoteIp": "$remote_addr",'
+            '"serverIp": "$server_addr",'
+            '"referer": "$http_referer",'
+            '"latency": "$request_time",'
+            '"cacheLookup": false,'
+            '"cacheHit": false,'
+            '"cacheValidatedWithOriginServer": false,'
+            '"cacheFillBytes": "0",'
+            '"protocol": "$server_protocol"'
+        '},'
+        '"resource": {'
+            '"type": "http_load_balancer",'
+            '"labels": {'
+                '"backend_service_name": "crystal-api",'
+                '"zone": "container"'
+            '}'
+        '},'
+        '"labels": {'
+            '"nginx_version": "$nginx_version",'
+            '"worker_pid": "$pid"'
+        '},'
+        '"operation": {'
+            '"id": "$request_id",'
+            '"producer": "nginx",'
+            '"first": true,'
+            '"last": true'
+        '},'
+        '"trace": "$http_x_cloud_trace_context",'
+        '"spanId": "$http_x_cloud_trace_context",'
+        '"traceSampled": true,'
+        '"sourceLocation": {'
+            '"file": "nginx.conf",'
+            '"line": 1,'
+            '"function": "http_request"'
+        '}'
+    '}';
+
+    # Log format JSON simplificado (alternativa mais limpa)
+    log_format json_simple escape=json '{'
+        '"timestamp": "$time_iso8601",'
+        '"severity": "INFO",'
+        '"httpRequest": {'
+            '"requestMethod": "$request_method",'
+            '"requestUrl": "$request_uri",'
+            '"status": $status,'
+            '"responseSize": "$body_bytes_sent",'
+            '"userAgent": "$http_user_agent",'
+            '"remoteIp": "$remote_addr",'
+            '"latency": "$request_time",'
+            '"protocol": "$server_protocol"'
+        '},'
+        '"resource": {'
+            '"type": "http_load_balancer"'
+        '}'
+    '}';
+
+    # Direcionar access_log para stdout em formato JSON (padrão para containers)
+    access_log  /dev/stdout json_escape;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    include /etc/nginx/conf.d/*.conf;
+}

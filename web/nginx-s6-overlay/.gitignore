@@ -1,5 +1,7 @@
-/docs/
 /lib/
 /bin/
 /.shards/
 *.dwarf
+/lgtm/
+/dist/
+/node_modules/

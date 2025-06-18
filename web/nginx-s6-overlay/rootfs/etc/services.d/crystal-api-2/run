@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Starting Crystal API instance 2 on port 3002..."
+export PORT=3002
+export INSTANCE_ID=2
+exec /usr/bin/my-api

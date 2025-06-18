@@ -2,7 +2,7 @@ name: nginx-s6-overlay
 version: 0.1.0
 
 authors:
-  - your-name-here <heitor.carneiro@nubank.com.br>
+  - Heitor Carneiro <heitorgcarneiro@gmail.com>
 
 targets:
   nginx-s6-overlay:

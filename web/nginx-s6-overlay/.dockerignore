@@ -1,0 +1,11 @@
+.git
+.gitignore
+README.md
+.cursor
+spec/
+*.md
+Dockerfile
+Makefile
+.env*
+.cursor/tasks/
+/lgtm/
