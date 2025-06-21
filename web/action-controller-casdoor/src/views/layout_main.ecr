@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Spider-Gazelle + Casdoor</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f9f9f9; }
+    .header { background: #f0f0f0; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    .nav { margin-bottom: 20px; }
+    .nav a { margin-right: 15px; text-decoration: none; color: #007bff; }
+    .nav a:hover { text-decoration: underline; }
+    .user-info { background: #e8f5e8; padding: 10px; border-radius: 4px; margin-bottom: 15px; }
+    .btn { background: #007bff; color: white; padding: 6px 14px; text-decoration: none; border-radius: 4px; display: inline-block; }
+    .btn:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🕷️ Spider-Gazelle + 🔐 Casdoor</h1>
+    <p>Exemplo de integração OAuth</p>
+  </div>
+  <div class="nav">
+    <a href="/">Home</a>
+    <%- if logged_in? -%>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/profile">Perfil</a>
+      <a href="/logout">Logout</a>
+    <%- else -%>
+      <a href="/login" class="btn">Login</a>
+    <%- end -%>
+  </div>
+  <%- if current_user %>
+    <div class="user-info">
+      Logado como <strong><%= current_user.try(&.name) %></strong> (<%= current_user.try(&.email) %>)
+      <a href="/logout">Sair</a>
+    </div>
+  <%- else %>
+    <a href="/login">Fazer login</a>
+  <%- end %>
+  <%= content %>
+</body>
+</html>

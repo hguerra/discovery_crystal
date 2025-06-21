@@ -1,0 +1,18 @@
+networks:
+  service_network:
+    external: false
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=casdoor
+      - POSTGRES_USER=casdoor
+      - POSTGRES_PASSWORD=casdoor
+    ports:
+      - '5432:5432'
+    volumes:
+      - '.docker/postgres:/var/lib/postgresql/data'
+    networks:
+      - service_network

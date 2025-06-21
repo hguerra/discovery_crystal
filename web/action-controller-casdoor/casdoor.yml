@@ -1,0 +1,14 @@
+networks:
+  service_network:
+    external: false
+
+services:
+  casdoor:
+    image: casbin/casdoor:latest
+    container_name: casdoor
+    ports:
+      - '8000:8000'
+    volumes:
+      - './casdoor/conf/app.conf:/conf/app.conf'
+    networks:
+      - service_network

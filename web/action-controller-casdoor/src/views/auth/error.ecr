@@ -1,0 +1,37 @@
+<div class="error-page">
+  <h2>❌ Erro de Autenticação</h2>
+
+  <div class="error-message">
+    <h3>Ocorreu um erro durante o processo de autenticação</h3>
+    <p>Isso pode ter acontecido por:</p>
+    <ul>
+      <li>Parâmetros inválidos no callback OAuth</li>
+      <li>Token de autorização expirado</li>
+      <li>Erro na comunicação com o Casdoor</li>
+      <li>Configuração incorreta da aplicação</li>
+    </ul>
+  </div>
+
+  <div class="actions">
+    <a href="/login" class="btn">Tentar Novamente</a>
+    <a href="/" class="btn" style="background: #6c757d;">Voltar para Home</a>
+  </div>
+
+  <div class="debug-info">
+    <h4>🐛 Informações de Debug</h4>
+    <p><strong>Casdoor URL:</strong> <%= App::CASDOOR_URL %></p>
+    <p><strong>Client ID:</strong> <%= App::CASDOOR_CLIENT_ID %></p>
+    <p><strong>Organization:</strong> <%= App::CASDOOR_ORGANIZATION %></p>
+  </div>
+</div>
+
+<style>
+.error-page { max-width: 600px; margin: 0 auto; }
+.error-message { background: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 4px; margin: 20px 0; }
+.error-message ul { margin: 10px 0; padding-left: 20px; }
+.error-message li { margin: 5px 0; }
+.actions { margin: 20px 0; }
+.actions .btn { margin-right: 10px; }
+.debug-info { background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 4px; margin: 20px 0; }
+.debug-info p { margin: 5px 0; }
+</style>

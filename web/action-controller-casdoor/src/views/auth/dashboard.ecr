@@ -1,0 +1,55 @@
+<div class="dashboard">
+  <h2>📊 Dashboard</h2>
+
+  <%- if current_user -%>
+    <div class="user-welcome">
+      <h3>Bem-vindo, <%= current_user.try(&.name) %>!</h3>
+      <p>Esta é uma página privada que requer autenticação.</p>
+    </div>
+
+    <div class="user-details">
+      <h4>👤 Informações do Usuário</h4>
+      <table class="user-table">
+        <tr><td><strong>ID:</strong></td><td><%= current_user.try(&.id) %></td></tr>
+        <tr><td><strong>Nome:</strong></td><td><%= current_user.try(&.name) %></td></tr>
+        <tr><td><strong>Email:</strong></td><td><%= current_user.try(&.email) %></td></tr>
+        <tr><td><strong>Token:</strong></td><td><code><%= current_user.try(&.access_token) %></code></td></tr>
+      </table>
+    </div>
+
+    <div class="api-test">
+      <h4>🔧 Teste de API</h4>
+      <p>Teste as APIs de autenticação:</p>
+      <ul>
+        <li><a href="/api/me" target="_blank">GET /api/me</a> - Informações do usuário atual</li>
+        <li><a href="/api/auth/status" target="_blank">GET /api/auth/status</a> - Status de autenticação</li>
+      </ul>
+    </div>
+
+    <div class="actions">
+      <a href="/profile" class="btn">Ver Perfil Completo</a>
+      <a href="/logout" class="btn" style="background: #dc3545;">Logout</a>
+    </div>
+  <%- else -%>
+    <div class="error-message">
+      <h3>❌ Acesso Negado</h3>
+      <p>Você precisa estar logado para acessar esta página.</p>
+      <a href="/login" class="btn">Fazer Login</a>
+    </div>
+  <%- end -%>
+</div>
+
+<style>
+.dashboard { max-width: 800px; margin: 0 auto; }
+.user-welcome { background: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 4px; margin: 20px 0; }
+.user-details { background: white; border: 1px solid #dee2e6; padding: 20px; border-radius: 8px; margin: 20px 0; }
+.user-table { width: 100%; border-collapse: collapse; }
+.user-table td { padding: 8px; border-bottom: 1px solid #dee2e6; }
+.user-table td:first-child { font-weight: bold; width: 120px; }
+.api-test { background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 4px; margin: 20px 0; }
+.api-test ul { margin: 10px 0; padding-left: 20px; }
+.api-test li { margin: 5px 0; }
+.actions { margin: 20px 0; }
+.actions .btn { margin-right: 10px; }
+.error-message { background: #f8d7da; border: 1px solid #f5c6cb; padding: 15px; border-radius: 4px; margin: 20px 0; }
+</style>

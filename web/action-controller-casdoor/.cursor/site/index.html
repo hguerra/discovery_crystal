@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crystal - Guia Completo</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/crystal.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2>Crystal</h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">Início</a></li>
+                <li><a href="#basics">Básico</a></li>
+                <li><a href="#web">Web</a></li>
+                <li><a href="#database">Database</a></li>
+                <li><a href="#advanced">Avançado</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>Crystal</h1>
+                <p class="hero-subtitle">Linguagem de programação rápida como C, simples como Ruby</p>
+                <div class="hero-features">
+                    <div class="feature">
+                        <h3>🚀 Performance</h3>
+                        <p>Compilada nativamente para máxima velocidade</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🔒 Type Safety</h3>
+                        <p>Sistema de tipos forte com inferência automática</p>
+                    </div>
+                    <div class="feature">
+                        <h3>💎 Produtividade</h3>
+                        <p>Sintaxe limpa e expressiva inspirada no Ruby</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="basics" class="section">
+            <div class="container">
+                <h2>Fundamentos do Crystal</h2>
+
+                <div class="subsection">
+                    <h3>Hello World</h3>
+                    <pre><code class="language-crystal">puts "Hello, World!"</code></pre>
+                    <p>Crystal é simples de começar. Não há necessidade de função main ou boilerplate complexo.</p>
+                </div>
+
+                <div class="subsection">
+                    <h3>Variáveis e Tipos</h3>
+                    <pre><code class="language-crystal"># Inferência automática de tipos
+name = "Alice"           # String
+age = 30                 # Int32
+height = 1.75           # Float64
+is_active = true        # Bool
+
+# Especificação explícita de tipos
+username : String = "bob"
+count : Int32 = 42
+
+# Union types
+value : String | Int32 = "hello"
+value = 123  # Válido!</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>Classes e Métodos</h3>
+                    <pre><code class="language-crystal">class Person
+  getter name : String
+  property age : Int32
+
+  def initialize(@name : String, @age : Int32)
+  end
+
+  def greet
+    puts "Olá, meu nome é #{@name} e tenho #{@age} anos"
+  end
+
+  def adult?
+    @age >= 18
+  end
+end
+
+person = Person.new("João", 25)
+person.greet
+puts person.adult?  # true</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>Módulos e Mixins</h3>
+                    <pre><code class="language-crystal">module Walkable
+  def walk
+    puts "Caminhando..."
+  end
+end
+
+module Runnable
+  def run
+    puts "Correndo..."
+  end
+end
+
+class Human
+  include Walkable
+  include Runnable
+end
+
+human = Human.new
+human.walk  # "Caminhando..."
+human.run   # "Correndo..."</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="web" class="section">
+            <div class="container">
+                <h2>Desenvolvimento Web com Spider-Gazelle</h2>
+
+                <div class="subsection">
+                    <h3>Instalação</h3>
+                    <pre><code class="language-yaml"># shard.yml
+dependencies:
+  action-controller:
+    github: spider-gazelle/action-controller
+    version: ~> 7.0</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>Controller Básico</h3>
+                    <pre><code class="language-crystal">require "action-controller"
+
+class WelcomeController < ActionController::Base
+  base "/"
+
+  @[AC::Route::GET("/")]
+  def index
+    "Hello, Spider-Gazelle!"
+  end
+
+  @[AC::Route::GET("/users/:id")]
+  def show(id : Int32)
+    {id: id, name: "User #{id}"}
+  end
+
+  @[AC::Route::POST("/users", body: :user)]
+  def create(user : User)
+    user.save!
+    user
+  end
+end
+
+struct User
+  include JSON::Serializable
+  property name : String
+  property email : String
+end</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>Filtros e Middleware</h3>
+                    <pre><code class="language-crystal">abstract class Application < ActionController::Base
+  # Filtro para logging
+  @[AC::Route::Filter(:before_action)]
+  def set_request_id
+    @request_id = UUID.random.to_s
+    Log.context.set(request_id: @request_id)
+    response.headers["X-Request-ID"] = @request_id
+  end
+
+  # Filtro de autenticação
+  @[AC::Route::Filter(:before_action)]
+  def authenticate
+    token = request.headers["Authorization"]?
+    raise AC::Error::Unauthorized.new unless token
+  end
+
+  # Handler de exceções
+  @[AC::Route::Exception(AC::Error::NotFound, status_code: :not_found)]
+  def not_found(error)
+    {error: "Recurso não encontrado", message: error.message}
+  end
+end</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>WebSockets</h3>
+                    <pre><code class="language-crystal">class ChatController < Application
+  @[AC::Route::WebSocket("/chat")]
+  def chat(socket)
+    # Adicionar cliente à lista
+    CLIENTS << socket
+
+    socket.on_message do |message|
+      # Broadcast para todos os clientes
+      CLIENTS.each { |client| client.send(message) }
+    end
+
+    socket.on_close do
+      CLIENTS.delete(socket)
+    end
+  end
+
+  CLIENTS = [] of HTTP::WebSocket
+end</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>Servidor e Configuração</h3>
+                    <pre><code class="language-crystal">require "action-controller/server"
+
+# Configurar middlewares
+ActionController::Server.before(
+  ActionController::ErrorHandler.new(production: true),
+  ActionController::LogHandler.new(["password", "token"])
+)
+
+# Iniciar servidor
+server = ActionController::Server.new(3000, "0.0.0.0")
+server.cluster(4) if ENV["CLUSTER"]? == "true"
+
+server.run do
+  puts "Servidor rodando em http://localhost:3000"
+end</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="database" class="section">
+            <div class="container">
+                <h2>Banco de Dados com PostgreSQL</h2>
+
+                <div class="subsection">
+                    <h3>Instalação</h3>
+                    <pre><code class="language-yaml"># shard.yml
+dependencies:
+  pg:
+    github: will/crystal-pg
+  db:
+    github: crystal-lang/crystal-db</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>Conexão e Consultas Básicas</h3>
+                    <pre><code class="language-crystal">require "db"
+require "pg"
+
+# Conectar ao banco
+DB.open("postgres://user:pass@localhost/mydb") do |db|
+  # Criar tabela
+  db.exec <<-SQL
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(100) NOT NULL,
+      email VARCHAR(100) UNIQUE NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  SQL
+
+  # Inserir dados
+  db.exec "INSERT INTO users (name, email) VALUES (?, ?)",
+          "João Silva", "joao@example.com"
+
+  # Consultar dados
+  db.query "SELECT * FROM users WHERE id = ?", 1 do |rs|
+    rs.each do
+      id = rs.read(Int32)
+      name = rs.read(String)
+      email = rs.read(String)
+      created_at = rs.read(Time)
+
+      puts "User: #{name} (#{email})"
+    end
+  end
+end</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>Pool de Conexões</h3>
+                    <pre><code class="language-crystal"># Configurar pool de conexões
+DB.open("postgres://user:pass@localhost/mydb?max_pool_size=10") do |db|
+  # Usar transações
+  db.transaction do |tx|
+    tx.connection.exec "INSERT INTO users (name, email) VALUES (?, ?)",
+                       "Maria", "maria@example.com"
+    tx.connection.exec "UPDATE users SET name = ? WHERE id = ?",
+                       "Maria Silva", 1
+  end
+end</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>Trabalhando com Arrays</h3>
+                    <pre><code class="language-crystal"># PostgreSQL arrays
+db.query "SELECT ARRAY[1, 2, 3, 4, 5]" do |rs|
+  rs.each do
+    numbers = rs.read(Array(Int32))
+    puts numbers  # [1, 2, 3, 4, 5]
+  end
+end
+
+# Inserir array
+db.exec "INSERT INTO tags (name, keywords) VALUES (?, ?)",
+        "Crystal", ["programming", "language", "fast"]</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>Listen/Notify</h3>
+                    <pre><code class="language-crystal"># Escutar notificações
+PG.connect_listen("postgres://user:pass@localhost/mydb", "user_updates") do |n|
+  puts "Notificação recebida: #{n.payload} no canal #{n.channel}"
+end
+
+# Em outro lugar, enviar notificação
+db.exec "NOTIFY user_updates, 'New user registered'"</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <section id="advanced" class="section">
+            <div class="container">
+                <h2>Tópicos Avançados</h2>
+
+                <div class="subsection">
+                    <h3>Concorrência com Fibers</h3>
+                    <pre><code class="language-crystal"># Criar múltiplas fibers
+10.times do |i|
+  spawn do
+    puts "Fiber #{i} iniciada"
+    sleep(rand(1..3).seconds)
+    puts "Fiber #{i} finalizada"
+  end
+end
+
+# Aguardar todas as fibers terminarem
+Fiber.yield
+sleep(5.seconds)</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>Channels para Comunicação</h3>
+                    <pre><code class="language-crystal"># Canal para comunicação entre fibers
+channel = Channel(String).new
+
+# Producer
+spawn do
+  10.times do |i|
+    channel.send("Mensagem #{i}")
+    sleep(0.1.seconds)
+  end
+  channel.close
+end
+
+# Consumer
+spawn do
+  while message = channel.receive?
+    puts "Recebido: #{message}"
+  end
+end
+
+sleep(2.seconds)</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>Macros e Metaprogramação</h3>
+                    <pre><code class="language-crystal"># Macro para criar getters/setters
+macro property(name, type)
+  @{{name.id}} : {{type}}?
+
+  def {{name.id}}
+    @{{name.id}}
+  end
+
+  def {{name.id}}=(value : {{type}})
+    @{{name.id}} = value
+  end
+end
+
+class User
+  property name, String
+  property age, Int32
+end
+
+# Macro para logging
+macro log_method(method_name)
+  def {{method_name}}(*args)
+    puts "Calling {{method_name}} with #{args}"
+    result = previous_def(*args)
+    puts "{{method_name}} returned #{result}"
+    result
+  end
+end</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>Otimizações de Performance</h3>
+                    <pre><code class="language-crystal"># Use structs para dados pequenos
+struct Point
+  getter x : Float64
+  getter y : Float64
+
+  def initialize(@x : Float64, @y : Float64)
+  end
+end
+
+# Evite alocações desnecessárias
+def process_data(data : Array(Int32))
+  data.each do |item|
+    # Processamento sem criar novos objetos
+    yield item * 2
+  end
+end
+
+# Use views para strings sem cópia
+def extract_username(email : String)
+  email.split('@').first
+end</code></pre>
+                </div>
+
+                <div class="subsection">
+                    <h3>Compilação e Deploy</h3>
+                    <pre><code class="language-bash"># Compilar para produção
+crystal build --release --static src/app.cr
+
+# Compilar com otimizações específicas
+crystal build --release --no-debug --link-flags="-static" src/app.cr
+
+# Cross-compilation
+crystal build --cross-compile --target x86_64-linux-gnu src/app.cr</code></pre>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Crystal Guide. Criado com ❤️ para a comunidade Crystal.</p>
+            <div class="footer-links">
+                <a href="https://crystal-lang.org/">Crystal Official</a>
+                <a href="https://github.com/crystal-lang/crystal">GitHub</a>
+                <a href="https://crystal-lang.org/api/">API Docs</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referência da API - Crystal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/crystal.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><a href="index.html">Crystal</a></h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Início</a></li>
+                <li><a href="examples.html">Exemplos</a></li>
+                <li><a href="api-reference.html">API</a></li>
+                <li><a href="tutorials.html">Tutoriais</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="api-layout">
+        <aside class="api-sidebar">
+            <h3>Referência</h3>
+            <ul class="api-nav">
+                <li><a href="#stdlib">Standard Library</a></li>
+                <li><a href="#spider-gazelle">Spider-Gazelle</a></li>
+                <li><a href="#crystal-pg">Crystal-PG</a></li>
+                <li><a href="#types">Tipos Básicos</a></li>
+                <li><a href="#collections">Coleções</a></li>
+                <li><a href="#concurrency">Concorrência</a></li>
+                <li><a href="#io">I/O</a></li>
+                <li><a href="#http">HTTP</a></li>
+                <li><a href="#json">JSON</a></li>
+                <li><a href="#macros">Macros</a></li>
+            </ul>
+        </aside>
+
+        <main class="api-content">
+            <section id="stdlib" class="api-section">
+                <h1>Referência da API Crystal</h1>
+                <p>Documentação completa das principais bibliotecas e frameworks do Crystal.</p>
+
+                <h2>Standard Library</h2>
+
+                <div class="api-item">
+                    <h3>String</h3>
+                    <p>Manipulação de strings em Crystal.</p>
+                    <div class="methods">
+                        <div class="method">
+                            <h4><code>String#size</code></h4>
+                            <p>Retorna o número de caracteres na string.</p>
+                            <pre><code class="language-crystal">"hello".size # => 5</code></pre>
+                        </div>
+
+                        <div class="method">
+                            <h4><code>String#upcase</code></h4>
+                            <p>Converte a string para maiúsculas.</p>
+                            <pre><code class="language-crystal">"hello".upcase # => "HELLO"</code></pre>
+                        </div>
+
+                        <div class="method">
+                            <h4><code>String#split(delimiter)</code></h4>
+                            <p>Divide a string usando o delimitador especificado.</p>
+                            <pre><code class="language-crystal">"a,b,c".split(",") # => ["a", "b", "c"]</code></pre>
+                        </div>
+
+                        <div class="method">
+                            <h4><code>String#includes?(substring)</code></h4>
+                            <p>Verifica se a string contém a substring.</p>
+                            <pre><code class="language-crystal">"hello world".includes?("world") # => true</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-item">
+                    <h3>Array(T)</h3>
+                    <p>Array tipado e dinâmico.</p>
+                    <div class="methods">
+                        <div class="method">
+                            <h4><code>Array(T)#push(item)</code></h4>
+                            <p>Adiciona um item ao final do array.</p>
+                            <pre><code class="language-crystal">arr = [1, 2, 3]
+arr.push(4)
+arr # => [1, 2, 3, 4]</code></pre>
+                        </div>
+
+                        <div class="method">
+                            <h4><code>Array(T)#map(&block)</code></h4>
+                            <p>Transforma cada elemento do array.</p>
+                            <pre><code class="language-crystal">[1, 2, 3].map { |x| x * 2 } # => [2, 4, 6]</code></pre>
+                        </div>
+
+                        <div class="method">
+                            <h4><code>Array(T)#select(&block)</code></h4>
+                            <p>Filtra elementos que satisfazem a condição.</p>
+                            <pre><code class="language-crystal">[1, 2, 3, 4].select { |x| x.even? } # => [2, 4]</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="spider-gazelle" class="api-section">
+                <h2>Spider-Gazelle (Action Controller)</h2>
+
+                <div class="api-item">
+                    <h3>ActionController::Base</h3>
+                    <p>Classe base para todos os controllers.</p>
+
+                    <div class="method">
+                        <h4>Anotações de Rota</h4>
+                        <pre><code class="language-crystal"># Rotas HTTP
+@[AC::Route::GET("/path")]
+@[AC::Route::POST("/path", body: :param_name)]
+@[AC::Route::PUT("/path/:id")]
+@[AC::Route::DELETE("/path/:id")]
+@[AC::Route::PATCH("/path/:id")]
+
+# WebSocket
+@[AC::Route::WebSocket("/ws")]
+
+# Filtros
+@[AC::Route::Filter(:before_action)]
+@[AC::Route::Filter(:after_action)]
+@[AC::Route::Filter(:around_action)]
+
+# Exceções
+@[AC::Route::Exception(ExceptionClass, status_code: :not_found)]</code></pre>
+                    </div>
+
+                    <div class="method">
+                        <h4>Métodos do Controller</h4>
+                        <pre><code class="language-crystal">class MyController < ActionController::Base
+  # Definir base path
+  base "/api/v1"
+
+  # Acessar request/response
+  def my_action
+    request.headers["Authorization"]
+    response.status_code = 201
+    response.headers["X-Custom"] = "value"
+  end
+
+  # Parâmetros de rota
+  @[AC::Route::GET("/:id")]
+  def show(id : Int32)
+    # id é automaticamente convertido
+  end
+
+  # Body parsing
+  @[AC::Route::POST("/", body: :user)]
+  def create(user : User)
+    # user é automaticamente deserializado
+  end
+end</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-item">
+                    <h3>Middlewares</h3>
+                    <div class="method">
+                        <h4>ActionController::Server</h4>
+                        <pre><code class="language-crystal"># Configurar middlewares
+ActionController::Server.before(
+  ActionController::ErrorHandler.new(production: true),
+  ActionController::LogHandler.new(["password", "token"]),
+  HTTP::CompressHandler.new
+)
+
+# Iniciar servidor
+server = ActionController::Server.new(3000, "0.0.0.0")
+server.cluster(4) # 4 processos
+server.run</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-item">
+                    <h3>Parâmetros e Validação</h3>
+                    <div class="method">
+                        <h4>Conversores de Parâmetros</h4>
+                        <pre><code class="language-crystal"># Conversor customizado
+struct TimestampConverter
+  def convert(value : String) : Time
+    Time.unix(value.to_i64)
+  end
+end
+
+# Usar no controller
+@[AC::Route::GET("/")]
+def index(
+  @[AC::Param::Converter(TimestampConverter)]
+  since : Time,
+  @[AC::Param::Info(description: "Número da página")]
+  page : Int32 = 1
+)
+end</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="crystal-pg" class="api-section">
+                <h2>Crystal-PG</h2>
+
+                <div class="api-item">
+                    <h3>Conexão ao Banco</h3>
+                    <div class="method">
+                        <h4>DB.open</h4>
+                        <pre><code class="language-crystal">require "db"
+require "pg"
+
+# Conexão simples
+DB.open("postgres://user:pass@host/db") do |db|
+  # usar db
+end
+
+# Pool de conexões
+DB.open("postgres://user:pass@host/db?max_pool_size=10") do |db|
+  # usar db
+end</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-item">
+                    <h3>Queries</h3>
+                    <div class="methods">
+                        <div class="method">
+                            <h4><code>DB#exec(sql, *args)</code></h4>
+                            <p>Executa SQL sem retornar dados.</p>
+                            <pre><code class="language-crystal">db.exec("INSERT INTO users (name) VALUES (?)", "João")</code></pre>
+                        </div>
+
+                        <div class="method">
+                            <h4><code>DB#query(sql, *args, &block)</code></h4>
+                            <p>Executa query e processa resultados.</p>
+                            <pre><code class="language-crystal">db.query("SELECT id, name FROM users") do |rs|
+  rs.each do
+    id = rs.read(Int32)
+    name = rs.read(String)
+    puts "#{id}: #{name}"
+  end
+end</code></pre>
+                        </div>
+
+                        <div class="method">
+                            <h4><code>DB#query_one(sql, *args)</code></h4>
+                            <p>Retorna exatamente um resultado.</p>
+                            <pre><code class="language-crystal">count = db.query_one("SELECT COUNT(*) FROM users", &.read(Int64))</code></pre>
+                        </div>
+
+                        <div class="method">
+                            <h4><code>DB#query_all(sql, *args)</code></h4>
+                            <p>Retorna array com todos os resultados.</p>
+                            <pre><code class="language-crystal">names = db.query_all("SELECT name FROM users", &.read(String))</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-item">
+                    <h3>Transações</h3>
+                    <div class="method">
+                        <h4><code>DB#transaction</code></h4>
+                        <pre><code class="language-crystal">db.transaction do |tx|
+  tx.connection.exec("INSERT INTO users (name) VALUES (?)", "João")
+  tx.connection.exec("INSERT INTO profiles (user_id) VALUES (?)", user_id)
+  # Commit automático ou rollback em caso de exceção
+end</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-item">
+                    <h3>Tipos PostgreSQL</h3>
+                    <div class="method">
+                        <h4>Arrays</h4>
+                        <pre><code class="language-crystal"># Ler array
+tags = db.query_one("SELECT tags FROM posts WHERE id = ?", 1, &.read(Array(String)))
+
+# Inserir array
+db.exec("INSERT INTO posts (tags) VALUES (?)", ["crystal", "programming"])</code></pre>
+                    </div>
+
+                    <div class="method">
+                        <h4>JSON/JSONB</h4>
+                        <pre><code class="language-crystal"># Ler JSON
+metadata = db.query_one("SELECT metadata FROM users WHERE id = ?", 1, &.read(JSON::Any))
+
+# Inserir JSON
+data = {"key" => "value"}
+db.exec("INSERT INTO users (metadata) VALUES (?)", data.to_json)</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="types" class="api-section">
+                <h2>Tipos Básicos</h2>
+
+                <div class="api-item">
+                    <h3>Numeric Types</h3>
+                    <div class="type-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Tamanho</th>
+                                    <th>Range</th>
+                                    <th>Exemplo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>Int8</code></td>
+                                    <td>1 byte</td>
+                                    <td>-128 to 127</td>
+                                    <td><code>42_i8</code></td>
+                                </tr>
+                                <tr>
+                                    <td><code>Int16</code></td>
+                                    <td>2 bytes</td>
+                                    <td>-32,768 to 32,767</td>
+                                    <td><code>42_i16</code></td>
+                                </tr>
+                                <tr>
+                                    <td><code>Int32</code></td>
+                                    <td>4 bytes</td>
+                                    <td>-2^31 to 2^31-1</td>
+                                    <td><code>42</code></td>
+                                </tr>
+                                <tr>
+                                    <td><code>Int64</code></td>
+                                    <td>8 bytes</td>
+                                    <td>-2^63 to 2^63-1</td>
+                                    <td><code>42_i64</code></td>
+                                </tr>
+                                <tr>
+                                    <td><code>Float32</code></td>
+                                    <td>4 bytes</td>
+                                    <td>IEEE 754</td>
+                                    <td><code>3.14_f32</code></td>
+                                </tr>
+                                <tr>
+                                    <td><code>Float64</code></td>
+                                    <td>8 bytes</td>
+                                    <td>IEEE 754</td>
+                                    <td><code>3.14</code></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="api-item">
+                    <h3>Bool</h3>
+                    <div class="method">
+                        <pre><code class="language-crystal">true || false   # => true
+true && false   # => false
+!true          # => false
+
+# Truthy/Falsy values
+nil            # falsy
+false          # falsy
+# Tudo mais é truthy</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-item">
+                    <h3>Nil</h3>
+                    <div class="method">
+                        <pre><code class="language-crystal"># Union types com Nil
+name : String? = nil  # String | Nil
+name = "João"
+
+# Safe navigation
+user.profile?.avatar?.url
+
+# Nil check
+if user
+  puts user.name
+end</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="collections" class="api-section">
+                <h2>Coleções</h2>
+
+                <div class="api-item">
+                    <h3>Hash(K, V)</h3>
+                    <div class="methods">
+                        <div class="method">
+                            <h4>Criação e Acesso</h4>
+                            <pre><code class="language-crystal"># Criação
+hash = {"a" => 1, "b" => 2}
+hash = Hash(String, Int32).new
+
+# Acesso
+hash["a"]      # => 1
+hash["c"]?     # => nil (safe access)
+hash.fetch("c", 0)  # => 0 (com default)
+
+# Modificação
+hash["c"] = 3
+hash.delete("a")</code></pre>
+                        </div>
+
+                        <div class="method">
+                            <h4>Iteração</h4>
+                            <pre><code class="language-crystal">hash.each do |key, value|
+  puts "#{key}: #{value}"
+end
+
+hash.keys    # => ["a", "b"]
+hash.values  # => [1, 2]</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="api-item">
+                    <h3>Set(T)</h3>
+                    <div class="method">
+                        <pre><code class="language-crystal">require "set"
+
+set = Set{1, 2, 3}
+set.add(4)
+set.includes?(2)  # => true
+set.delete(1)
+
+# Operações de conjunto
+set1 = Set{1, 2, 3}
+set2 = Set{3, 4, 5}
+set1 | set2  # união: {1, 2, 3, 4, 5}
+set1 & set2  # interseção: {3}
+set1 - set2  # diferença: {1, 2}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="concurrency" class="api-section">
+                <h2>Concorrência</h2>
+
+                <div class="api-item">
+                    <h3>Fibers</h3>
+                    <div class="method">
+                        <h4><code>spawn</code></h4>
+                        <pre><code class="language-crystal"># Criar fiber
+spawn do
+  puts "Hello from fiber!"
+  sleep 1.second
+  puts "Fiber done!"
+end
+
+# Spawn com nome
+spawn(name: "worker") do
+  # trabalho...
+end
+
+# Aguardar fibers
+Fiber.yield</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-item">
+                    <h3>Channels</h3>
+                    <div class="methods">
+                        <div class="method">
+                            <h4>Channel(T)</h4>
+                            <pre><code class="language-crystal"># Criar channel
+channel = Channel(String).new
+
+# Producer
+spawn do
+  channel.send("Hello")
+  channel.send("World")
+  channel.close
+end
+
+# Consumer
+spawn do
+  while message = channel.receive?
+    puts message
+  end
+end</code></pre>
+                        </div>
+
+                        <div class="method">
+                            <h4>Select</h4>
+                            <pre><code class="language-crystal">ch1 = Channel(String).new
+ch2 = Channel(Int32).new
+
+select
+when msg = ch1.receive
+  puts "String: #{msg}"
+when num = ch2.receive
+  puts "Number: #{num}"
+when timeout(1.second)
+  puts "Timeout!"
+end</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="macros" class="api-section">
+                <h2>Macros</h2>
+
+                <div class="api-item">
+                    <h3>Definição de Macros</h3>
+                    <div class="method">
+                        <pre><code class="language-crystal"># Macro simples
+macro debug(expression)
+  puts "Debug: {{expression}} = #{{{expression}}}"
+end
+
+debug(2 + 2)  # => Debug: 2 + 2 = 4
+
+# Macro com bloco
+macro benchmark(name, &block)
+  start = Time.utc
+  {{block.body}}
+  elapsed = Time.utc - start
+  puts "{{name.id}} took #{elapsed}"
+end
+
+benchmark("calculation") do
+  sum = (1..1000).sum
+end</code></pre>
+                    </div>
+                </div>
+
+                <div class="api-item">
+                    <h3>Metaprogramação</h3>
+                    <div class="method">
+                        <pre><code class="language-crystal"># Gerar métodos
+macro property(name, type)
+  @{{name.id}} : {{type}}?
+
+  def {{name.id}}
+    @{{name.id}}
+  end
+
+  def {{name.id}}=(value : {{type}})
+    @{{name.id}} = value
+  end
+end
+
+class User
+  property name, String
+  property age, Int32
+end</code></pre>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Crystal Guide. Criado com ❤️ para a comunidade Crystal.</p>
+        </div>
+    </footer>
+
+    <style>
+        .api-layout {
+            display: flex;
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .api-sidebar {
+            width: 250px;
+            background: var(--card-bg);
+            padding: 2rem 1rem;
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            top: 80px;
+        }
+
+        .api-content {
+            margin-left: 250px;
+            padding: 2rem;
+            flex: 1;
+        }
+
+        .api-nav {
+            list-style: none;
+            padding: 0;
+        }
+
+        .api-nav li {
+            margin: 0.5rem 0;
+        }
+
+        .api-nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            padding: 0.5rem;
+            display: block;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        .api-nav a:hover {
+            background: var(--background-color);
+            color: var(--accent-color);
+        }
+
+        .api-section {
+            margin-bottom: 3rem;
+        }
+
+        .api-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .api-item h3 {
+            background: var(--accent-color);
+            color: white;
+            margin: 0;
+            padding: 1rem;
+            font-size: 1.2rem;
+        }
+
+        .api-item > p {
+            padding: 1rem;
+            margin: 0;
+            background: var(--background-color);
+        }
+
+        .methods {
+            padding: 1rem;
+        }
+
+        .method {
+            margin: 1.5rem 0;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .method:last-child {
+            border-bottom: none;
+        }
+
+        .method h4 {
+            color: var(--accent-color);
+            margin: 0 0 0.5rem 0;
+            font-family: 'Consolas', monospace;
+        }
+
+        .type-table table {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .type-table th {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .type-table td {
+            padding: 0.5rem;
+        }
+
+        .type-table code {
+            background: var(--background-color);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .api-layout {
+                flex-direction: column;
+            }
+
+            .api-sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+            }
+
+            .api-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+
+    <script src="script.js"></script>
+</body>
+</html>

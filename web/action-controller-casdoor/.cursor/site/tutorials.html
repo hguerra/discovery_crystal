@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutoriais - Crystal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><a href="index.html">Crystal</a></h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Início</a></li>
+                <li><a href="examples.html">Exemplos</a></li>
+                <li><a href="api-reference.html">API</a></li>
+                <li><a href="tutorials.html">Tutoriais</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main style="margin-top: 80px;">
+        <section class="section">
+            <div class="container">
+                <h1>Tutoriais Passo a Passo</h1>
+
+                <div class="tutorial-grid">
+                    <div class="tutorial-card">
+                        <h3>🚀 Primeiros Passos</h3>
+                        <p>Instalação, setup e primeiro programa</p>
+                        <a href="#tutorial-1" class="btn">Começar</a>
+                    </div>
+
+                    <div class="tutorial-card">
+                        <h3>🌐 API REST Completa</h3>
+                        <p>Construa uma API com Spider-Gazelle</p>
+                        <a href="#tutorial-2" class="btn">Começar</a>
+                    </div>
+
+                    <div class="tutorial-card">
+                        <h3>💾 PostgreSQL Avançado</h3>
+                        <p>Migrations, queries complexas e performance</p>
+                        <a href="#tutorial-3" class="btn">Começar</a>
+                    </div>
+
+                    <div class="tutorial-card">
+                        <h3>⚡ Real-time com WebSockets</h3>
+                        <p>Chat em tempo real e notificações</p>
+                        <a href="#tutorial-4" class="btn">Começar</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tutorial 1: Primeiros Passos -->
+        <section id="tutorial-1" class="section">
+            <div class="container">
+                <h2>Tutorial 1: Primeiros Passos com Crystal</h2>
+
+                <div class="tutorial-step">
+                    <h3>Passo 1: Instalação</h3>
+                    <p>Instale Crystal no seu sistema:</p>
+
+                    <div class="code-tabs">
+                        <button class="tab-button active" onclick="showTab('linux')">Linux</button>
+                        <button class="tab-button" onclick="showTab('mac')">macOS</button>
+                        <button class="tab-button" onclick="showTab('windows')">Windows</button>
+                    </div>
+
+                    <div id="linux" class="tab-content active">
+                        <pre><code># Ubuntu/Debian
+curl -fsSL https://crystal-lang.org/install.sh | sudo bash
+
+# Arch Linux
+sudo pacman -S crystal
+
+# Fedora
+sudo dnf install crystal</code></pre>
+                    </div>
+
+                    <div id="mac" class="tab-content">
+                        <pre><code># Homebrew
+brew install crystal
+
+# MacPorts
+sudo port install crystal</code></pre>
+                    </div>
+
+                    <div id="windows" class="tab-content">
+                        <pre><code># Chocolatey
+choco install crystal
+
+# Scoop
+scoop install crystal</code></pre>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>Passo 2: Primeiro Projeto</h3>
+                    <p>Crie seu primeiro projeto Crystal:</p>
+                    <pre><code># Criar novo projeto
+crystal init app meu_projeto
+cd meu_projeto
+
+# Estrutura criada:
+# src/meu_projeto.cr  - Arquivo principal
+# spec/               - Testes
+# shard.yml          - Dependências</code></pre>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>Passo 3: Hello World</h3>
+                    <p>Edite <code>src/meu_projeto.cr</code>:</p>
+                    <pre><code class="language-crystal"># src/meu_projeto.cr
+puts "Hello, Crystal!"
+
+# Função simples
+def saudar(nome : String)
+  puts "Olá, #{nome}!"
+end
+
+saudar("Mundo")</code></pre>
+
+                    <p>Execute o programa:</p>
+                    <pre><code># Executar diretamente
+crystal run src/meu_projeto.cr
+
+# Compilar e executar
+crystal build src/meu_projeto.cr
+./meu_projeto</code></pre>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>Passo 4: Trabalhando com Classes</h3>
+                    <pre><code class="language-crystal"># src/pessoa.cr
+class Pessoa
+  # Propriedades com getter/setter automático
+  property nome : String
+  property idade : Int32
+
+  # Getter apenas (readonly)
+  getter id : String
+
+  def initialize(@nome : String, @idade : Int32)
+    @id = UUID.random.to_s
+  end
+
+  def adulto?
+    @idade >= 18
+  end
+
+  def cumprimentar
+    "Olá, sou #{@nome} e tenho #{@idade} anos"
+  end
+end
+
+# Uso da classe
+pessoa = Pessoa.new("Ana", 25)
+puts pessoa.cumprimentar
+puts "É adulto? #{pessoa.adulto?}"</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tutorial 2: API REST -->
+        <section id="tutorial-2" class="section">
+            <div class="container">
+                <h2>Tutorial 2: API REST com Spider-Gazelle</h2>
+
+                <div class="tutorial-step">
+                    <h3>Passo 1: Setup do Projeto</h3>
+                    <p>Crie um novo projeto para a API:</p>
+                    <pre><code>crystal init app todo_api
+cd todo_api</code></pre>
+
+                    <p>Configure as dependências no <code>shard.yml</code>:</p>
+                    <pre><code class="language-yaml">name: todo_api
+version: 0.1.0
+
+dependencies:
+  action-controller:
+    github: spider-gazelle/action-controller
+    version: ~> 7.0
+  pg-orm:
+    github: spider-gazelle/pg-orm
+  pg:
+    github: will/crystal-pg</code></pre>
+
+                    <pre><code>shards install</code></pre>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>Passo 2: Modelo de Dados</h3>
+                    <p>Crie o modelo Todo em <code>src/models/todo.cr</code>:</p>
+                    <pre><code class="language-crystal"># src/models/todo.cr
+require "pg-orm"
+
+class Todo < PgORM::Base
+  attribute id : Int32, primary_key: true
+  attribute title : String
+  attribute description : String?
+  attribute completed : Bool = false
+  attribute created_at : Time = Time.utc
+  attribute updated_at : Time = Time.utc
+
+  validates :title, presence: true, length: {minimum: 1, maximum: 100}
+end</code></pre>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>Passo 3: Controller Base</h3>
+                    <p>Crie <code>src/controllers/application.cr</code>:</p>
+                    <pre><code class="language-crystal"># src/controllers/application.cr
+require "action-controller"
+
+abstract class Application < ActionController::Base
+  # CORS para desenvolvimento
+  @[AC::Route::Filter(:before_action)]
+  def set_cors_headers
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type"
+  end
+
+  # Request ID para logging
+  @[AC::Route::Filter(:before_action)]
+  def set_request_id
+    request_id = UUID.random.to_s
+    response.headers["X-Request-ID"] = request_id
+    Log.context.set(request_id: request_id)
+  end
+
+  # Handler de erros
+  @[AC::Route::Exception(PgORM::Error::RecordNotFound, status_code: :not_found)]
+  def record_not_found(error)
+    {error: "Recurso não encontrado"}
+  end
+
+  @[AC::Route::Exception(PgORM::Error::RecordInvalid, status_code: :bad_request)]
+  def validation_error(error)
+    {error: "Dados inválidos", details: error.record.errors}
+  end
+end</code></pre>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>Passo 4: Controller de Todos</h3>
+                    <p>Crie <code>src/controllers/todos.cr</code>:</p>
+                    <pre><code class="language-crystal"># src/controllers/todos.cr
+class TodosController < Application
+  base "/api/todos"
+
+  # GET /api/todos
+  @[AC::Route::GET("/")]
+  def index(
+    completed : Bool? = nil,
+    search : String? = nil,
+    page : Int32 = 1,
+    per_page : Int32 = 20
+  ) : Array(Todo)
+    query = Todo.all
+
+    # Filtrar por status
+    if completed != nil
+      query = query.where(completed: completed)
+    end
+
+    # Busca por título
+    if search
+      query = query.where("title ILIKE ?", "%#{search}%")
+    end
+
+    # Paginação
+    todos = query.offset((page - 1) * per_page)
+                 .limit(per_page)
+                 .order(:created_at, :desc)
+                 .to_a
+
+    # Headers de paginação
+    total = Todo.count
+    response.headers["X-Total-Count"] = total.to_s
+    response.headers["X-Page"] = page.to_s
+
+    todos
+  end
+
+  # GET /api/todos/:id
+  @[AC::Route::GET("/:id")]
+  def show(id : Int32) : Todo
+    Todo.find!(id)
+  end
+
+  # POST /api/todos
+  @[AC::Route::POST("/", body: :todo_params)]
+  def create(todo_params : TodoParams) : Todo
+    todo = Todo.new(todo_params.to_h)
+    todo.save!
+
+    response.status_code = 201
+    todo
+  end
+
+  # PUT /api/todos/:id
+  @[AC::Route::PUT("/:id", body: :todo_params)]
+  def update(id : Int32, todo_params : TodoParams) : Todo
+    todo = Todo.find!(id)
+    todo.assign_attributes(todo_params.to_h)
+    todo.updated_at = Time.utc
+    todo.save!
+    todo
+  end
+
+  # DELETE /api/todos/:id
+  @[AC::Route::DELETE("/:id")]
+  def destroy(id : Int32) : Nil
+    todo = Todo.find!(id)
+    todo.destroy!
+    response.status_code = 204
+  end
+
+  # PATCH /api/todos/:id/toggle
+  @[AC::Route::PATCH("/:id/toggle")]
+  def toggle(id : Int32) : Todo
+    todo = Todo.find!(id)
+    todo.completed = !todo.completed
+    todo.updated_at = Time.utc
+    todo.save!
+    todo
+  end
+end
+
+struct TodoParams
+  include JSON::Serializable
+
+  property title : String
+  property description : String?
+  property completed : Bool?
+
+  def to_h
+    hash = Hash(Symbol, String | Bool).new
+    hash[:title] = title
+    hash[:description] = description if description
+    hash[:completed] = completed if completed
+    hash
+  end
+end</code></pre>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>Passo 5: Configuração e Servidor</h3>
+                    <p>Crie <code>src/config.cr</code>:</p>
+                    <pre><code class="language-crystal"># src/config.cr
+require "pg-orm"
+require "./models/*"
+require "./controllers/*"
+
+# Configurar banco de dados
+PG_DATABASE_URL = ENV["DATABASE_URL"]? || "postgres://localhost/todo_api_dev"
+PgORM::Database.parse(PG_DATABASE_URL)</code></pre>
+
+                    <p>Atualize <code>src/todo_api.cr</code>:</p>
+                    <pre><code class="language-crystal"># src/todo_api.cr
+require "./config"
+require "action-controller/server"
+
+# Configurar servidor
+server = ActionController::Server.new(3000, "0.0.0.0")
+
+# Middleware de logs
+ActionController::Server.before(
+  ActionController::LogHandler.new
+)
+
+puts "🚀 Todo API rodando em http://localhost:3000"
+server.run</code></pre>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>Passo 6: Testando a API</h3>
+                    <p>Execute o servidor:</p>
+                    <pre><code>crystal run src/todo_api.cr</code></pre>
+
+                    <p>Teste os endpoints:</p>
+                    <pre><code># Criar todo
+curl -X POST http://localhost:3000/api/todos \
+  -H "Content-Type: application/json" \
+  -d '{"title": "Aprender Crystal", "description": "Estudar a linguagem Crystal"}'
+
+# Listar todos
+curl http://localhost:3000/api/todos
+
+# Marcar como completo
+curl -X PATCH http://localhost:3000/api/todos/1/toggle</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tutorial 3: PostgreSQL Avançado -->
+        <section id="tutorial-3" class="section">
+            <div class="container">
+                <h2>Tutorial 3: PostgreSQL Avançado</h2>
+
+                <div class="tutorial-step">
+                    <h3>Passo 1: Configuração do Banco</h3>
+                    <p>Crie o banco de dados:</p>
+                    <pre><code># PostgreSQL
+createdb todo_api_dev
+psql todo_api_dev</code></pre>
+
+                    <p>Migrations em Crystal:</p>
+                    <pre><code class="language-crystal"># src/migrations/001_create_todos.cr
+require "pg-orm/migration"
+
+class CreateTodos < PgORM::Migration
+  def up
+    create_table :todos do |t|
+      t.string :title, null: false
+      t.text :description
+      t.boolean :completed, default: false
+      t.timestamps
+    end
+
+    add_index :todos, :completed
+    add_index :todos, :created_at
+  end
+
+  def down
+    drop_table :todos
+  end
+end</code></pre>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>Passo 2: Relacionamentos</h3>
+                    <p>Adicione modelo de usuário:</p>
+                    <pre><code class="language-crystal"># src/models/user.cr
+class User < PgORM::Base
+  attribute id : Int32, primary_key: true
+  attribute name : String
+  attribute email : String
+  attribute created_at : Time = Time.utc
+
+  has_many :todos, Todo, foreign_key: :user_id
+
+  validates :email, presence: true, uniqueness: true
+end
+
+# Atualizar Todo
+class Todo < PgORM::Base
+  # ... atributos existentes ...
+  attribute user_id : Int32?
+
+  belongs_to :user, User
+end</code></pre>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>Passo 3: Queries Complexas</h3>
+                    <pre><code class="language-crystal"># src/services/todo_service.cr
+class TodoService
+  def self.user_stats(user_id : Int32)
+    Todo.connection.query_one("""
+      SELECT
+        COUNT(*) as total,
+        COUNT(*) FILTER (WHERE completed = true) as completed,
+        COUNT(*) FILTER (WHERE completed = false) as pending,
+        AVG(EXTRACT(DAYS FROM (updated_at - created_at))) as avg_completion_days
+      FROM todos
+      WHERE user_id = $1
+    """, user_id) do |rs|
+      {
+        total: rs.read(Int64),
+        completed: rs.read(Int64),
+        pending: rs.read(Int64),
+        avg_completion_days: rs.read(Float64?)
+      }
+    end
+  end
+
+  def self.completion_timeline(user_id : Int32, days : Int32 = 30)
+    Todo.connection.query_all("""
+      SELECT
+        DATE(created_at) as date,
+        COUNT(*) as created,
+        COUNT(*) FILTER (WHERE completed = true) as completed_same_day
+      FROM todos
+      WHERE user_id = $1
+        AND created_at >= NOW() - INTERVAL '#{days} days'
+      GROUP BY DATE(created_at)
+      ORDER BY date
+    """, user_id) do |rs|
+      {
+        date: rs.read(Time),
+        created: rs.read(Int64),
+        completed_same_day: rs.read(Int64)
+      }
+    end
+  end
+end</code></pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tutorial 4: WebSockets -->
+        <section id="tutorial-4" class="section">
+            <div class="container">
+                <h2>Tutorial 4: Real-time com WebSockets</h2>
+
+                <div class="tutorial-step">
+                    <h3>Passo 1: WebSocket Controller</h3>
+                    <pre><code class="language-crystal"># src/controllers/realtime_controller.cr
+class RealtimeController < Application
+  # Store de conexões
+  CONNECTIONS = Set(HTTP::WebSocket).new
+
+  @[AC::Route::WebSocket("/ws")]
+  def websocket(socket)
+    # Adicionar à lista de conexões
+    CONNECTIONS << socket
+
+    # Notificar novo cliente conectado
+    broadcast({
+      type: "user_connected",
+      message: "Novo usuário conectado",
+      total_connections: CONNECTIONS.size
+    }, exclude: socket)
+
+    # Handler de mensagens
+    socket.on_message do |message|
+      begin
+        data = JSON.parse(message)
+        handle_message(socket, data)
+      rescue JSON::ParseException
+        socket.send({error: "Formato inválido"}.to_json)
+      end
+    end
+
+    # Handler de desconexão
+    socket.on_close do
+      CONNECTIONS.delete(socket)
+
+      broadcast({
+        type: "user_disconnected",
+        message: "Usuário desconectado",
+        total_connections: CONNECTIONS.size
+      })
+    end
+  end
+
+  private def handle_message(socket : HTTP::WebSocket, data : JSON::Any)
+    case data["type"].as_s
+    when "todo_created"
+      handle_todo_created(data)
+    when "todo_updated"
+      handle_todo_updated(data)
+    when "chat_message"
+      handle_chat_message(socket, data)
+    end
+  end
+
+  private def handle_todo_created(data : JSON::Any)
+    broadcast({
+      type: "todo_created",
+      todo: data["todo"]
+    })
+  end
+
+  private def broadcast(message : Hash, exclude : HTTP::WebSocket? = nil)
+    json = message.to_json
+    CONNECTIONS.each do |conn|
+      next if conn == exclude
+      begin
+        conn.send(json)
+      rescue
+        CONNECTIONS.delete(conn)
+      end
+    end
+  end
+
+  # Método público para outras partes da aplicação
+  def self.broadcast_todo_update(todo : Todo)
+    instance = new(HTTP::Server::Context.new(
+      HTTP::Request.new("GET", "/"),
+      HTTP::Server::Response.new(IO::Memory.new)
+    ))
+
+    instance.broadcast({
+      type: "todo_updated",
+      todo: {
+        id: todo.id,
+        title: todo.title,
+        completed: todo.completed,
+        updated_at: todo.updated_at.to_unix
+      }
+    })
+  end
+end</code></pre>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>Passo 2: Integração com API</h3>
+                    <p>Atualize o TodosController para notificar via WebSocket:</p>
+                    <pre><code class="language-crystal"># Atualizar src/controllers/todos.cr
+class TodosController < Application
+  # ... métodos existentes ...
+
+  @[AC::Route::POST("/", body: :todo_params)]
+  def create(todo_params : TodoParams) : Todo
+    todo = Todo.new(todo_params.to_h)
+    todo.save!
+
+    # Notificar via WebSocket
+    RealtimeController.broadcast_todo_update(todo)
+
+    response.status_code = 201
+    todo
+  end
+
+  @[AC::Route::PUT("/:id", body: :todo_params)]
+  def update(id : Int32, todo_params : TodoParams) : Todo
+    todo = Todo.find!(id)
+    todo.assign_attributes(todo_params.to_h)
+    todo.updated_at = Time.utc
+    todo.save!
+
+    # Notificar via WebSocket
+    RealtimeController.broadcast_todo_update(todo)
+
+    todo
+  end
+end</code></pre>
+                </div>
+
+                <div class="tutorial-step">
+                    <h3>Passo 3: Cliente JavaScript</h3>
+                    <p>Crie <code>public/index.html</code>:</p>
+                    <pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Todo App Real-time&lt;/title&gt;
+    &lt;style&gt;
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .todo { padding: 10px; border: 1px solid #ccc; margin: 5px 0; }
+        .completed { opacity: 0.6; text-decoration: line-through; }
+        .status { background: #f0f0f0; padding: 10px; margin-bottom: 20px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="status" id="status"&gt;Conectando...&lt;/div&gt;
+
+    &lt;h1&gt;Todo App&lt;/h1&gt;
+
+    &lt;form id="todoForm"&gt;
+        &lt;input type="text" id="title" placeholder="Nova tarefa" required&gt;
+        &lt;button type="submit"&gt;Adicionar&lt;/button&gt;
+    &lt;/form&gt;
+
+    &lt;div id="todos"&gt;&lt;/div&gt;
+
+    &lt;script&gt;
+        const ws = new WebSocket('ws://localhost:3000/ws');
+        const status = document.getElementById('status');
+        const todosDiv = document.getElementById('todos');
+
+        ws.onopen = () =&gt; {
+            status.textContent = 'Conectado ao servidor';
+            status.style.background = '#d4edda';
+            loadTodos();
+        };
+
+        ws.onmessage = (event) =&gt; {
+            const data = JSON.parse(event.data);
+            handleWebSocketMessage(data);
+        };
+
+        ws.onclose = () =&gt; {
+            status.textContent = 'Desconectado do servidor';
+            status.style.background = '#f8d7da';
+        };
+
+        function handleWebSocketMessage(data) {
+            switch(data.type) {
+                case 'todo_created':
+                case 'todo_updated':
+                    updateTodoInDOM(data.todo);
+                    break;
+                case 'user_connected':
+                case 'user_disconnected':
+                    status.textContent = `${data.message} (${data.total_connections} online)`;
+                    break;
+            }
+        }
+
+        async function loadTodos() {
+            const response = await fetch('/api/todos');
+            const todos = await response.json();
+            renderTodos(todos);
+        }
+
+        function renderTodos(todos) {
+            todosDiv.innerHTML = todos.map(todo =&gt; `
+                &lt;div class="todo ${todo.completed ? 'completed' : ''}" data-id="${todo.id}"&gt;
+                    &lt;input type="checkbox" ${todo.completed ? 'checked' : ''}
+                           onchange="toggleTodo(${todo.id})"&gt;
+                    ${todo.title}
+                &lt;/div&gt;
+            `).join('');
+        }
+
+        document.getElementById('todoForm').onsubmit = async (e) =&gt; {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+
+            await fetch('/api/todos', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({title})
+            });
+
+            document.getElementById('title').value = '';
+        };
+
+        async function toggleTodo(id) {
+            await fetch(`/api/todos/${id}/toggle`, {method: 'PATCH'});
+        }
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Crystal Guide. Criado com ❤️ para a comunidade Crystal.</p>
+        </div>
+    </footer>
+
+    <style>
+        .tutorial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .tutorial-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .tutorial-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .tutorial-step {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: var(--card-bg);
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .code-tabs {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+
+        .tab-button {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: var(--border-color);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .tab-button.active {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+
+    <script>
+        function showTab(tabName) {
+            // Esconder todas as tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Remover classe active dos botões
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Mostrar tab selecionada
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

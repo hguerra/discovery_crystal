@@ -1,0 +1,48 @@
+<div class="welcome">
+  <h2>Bem-vindo ao Spider-Gazelle + Casdoor Demo</h2>
+
+  <%- if logged_in? -%>
+    <div class="success-message">
+      <h3>✅ Você está logado!</h3>
+      <p>Bem-vindo, <strong><%= current_user.try(&.name) %></strong>!</p>
+      <p>Email: <%= current_user.try(&.email) %></p>
+      <p>Token: <code><%= current_user.try(&.access_token).try(&.[0..20]) %>...</code></p>
+    </div>
+
+    <div class="actions">
+      <a href="/dashboard" class="btn">Ir para Dashboard</a>
+      <a href="/profile" class="btn">Ver Perfil</a>
+      <a href="/logout" class="btn" style="background: #dc3545;">Logout</a>
+    </div>
+  <%- else -%>
+    <div class="info-message">
+      <h3>🔐 Autenticação OAuth</h3>
+      <p>Esta é uma demonstração de integração entre Spider-Gazelle e Casdoor.</p>
+      <p>Clique em "Login" para testar o fluxo OAuth.</p>
+    </div>
+
+    <div class="actions">
+      <a href="/login" class="btn">Fazer Login</a>
+    </div>
+  <%- end -%>
+
+  <div class="demo-info">
+    <h4>📋 Informações da Demo</h4>
+    <ul>
+      <li><strong>Casdoor URL:</strong> <%= App::CASDOOR_URL %></li>
+      <li><strong>Client ID:</strong> <%= App::CASDOOR_CLIENT_ID %></li>
+      <li><strong>Organization:</strong> <%= App::CASDOOR_ORGANIZATION %></li>
+    </ul>
+  </div>
+</div>
+
+<style>
+.welcome { max-width: 600px; margin: 0 auto; }
+.success-message { background: #d4edda; border: 1px solid #c3e6cb; padding: 15px; border-radius: 4px; margin: 20px 0; }
+.info-message { background: #d1ecf1; border: 1px solid #bee5eb; padding: 15px; border-radius: 4px; margin: 20px 0; }
+.actions { margin: 20px 0; }
+.actions .btn { margin-right: 10px; }
+.demo-info { background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 4px; margin-top: 30px; }
+.demo-info ul { margin: 10px 0; padding-left: 20px; }
+.demo-info li { margin: 5px 0; }
+</style>

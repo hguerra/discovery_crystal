@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemplos Práticos - Crystal</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/crystal.min.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h2><a href="index.html">Crystal</a></h2>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Início</a></li>
+                <li><a href="examples.html">Exemplos</a></li>
+                <li><a href="api-reference.html">API</a></li>
+                <li><a href="tutorials.html">Tutoriais</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <main style="margin-top: 80px;">
+        <section class="section">
+            <div class="container">
+                <h1>Exemplos Práticos</h1>
+                <p class="section-description">Exemplos reais de aplicações Crystal para diferentes cenários</p>
+
+                <div class="example-category">
+                    <h2>🌐 API REST com Spider-Gazelle</h2>
+
+                    <div class="subsection">
+                        <h3>API Completa de Usuários</h3>
+                        <pre><code class="language-crystal"># src/controllers/users.cr
+require "action-controller"
+require "pg-orm"
+
+class User < PgORM::Base
+  attribute id : Int32, primary_key: true
+  attribute name : String
+  attribute email : String
+  attribute created_at : Time = Time.utc
+  attribute updated_at : Time = Time.utc
+
+  validates :name, presence: true
+  validates :email, presence: true, uniqueness: true, format: EMAIL_REGEX
+
+  EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
+end
+
+class UsersController < Application
+  base "/api/v1/users"
+
+  # GET /api/v1/users
+  @[AC::Route::GET("/")]
+  def index(
+    @[AC::Param::Info(description: "Número da página", example: "1")]
+    page : Int32 = 1,
+    @[AC::Param::Info(description: "Itens por página", example: "20")]
+    per_page : Int32 = 20,
+    @[AC::Param::Info(description: "Buscar por nome ou email")]
+    search : String? = nil
+  ) : Array(User)
+    query = User.all
+
+    if search
+      query = query.where(
+        "name ILIKE ? OR email ILIKE ?",
+        "%#{search}%", "%#{search}%"
+      )
+    end
+
+    users = query.offset((page - 1) * per_page)
+                 .limit(per_page)
+                 .order(:created_at, :desc)
+                 .to_a
+
+    # Headers de paginação
+    total = User.count
+    response.headers["X-Total-Count"] = total.to_s
+    response.headers["X-Page"] = page.to_s
+    response.headers["X-Per-Page"] = per_page.to_s
+
+    users
+  end
+
+  # GET /api/v1/users/:id
+  @[AC::Route::GET("/:id")]
+  def show(id : Int32) : User
+    User.find!(id)
+  end
+
+  # POST /api/v1/users
+  @[AC::Route::POST("/", body: :user_params)]
+  def create(user_params : UserParams) : User
+    user = User.new(user_params.to_h)
+    user.save!
+
+    response.status_code = 201
+    user
+  end
+
+  # PUT /api/v1/users/:id
+  @[AC::Route::PUT("/:id", body: :user_params)]
+  def update(id : Int32, user_params : UserParams) : User
+    user = User.find!(id)
+    user.assign_attributes(user_params.to_h)
+    user.save!
+    user
+  end
+
+  # DELETE /api/v1/users/:id
+  @[AC::Route::DELETE("/:id")]
+  def destroy(id : Int32) : Nil
+    user = User.find!(id)
+    user.destroy!
+    response.status_code = 204
+  end
+end
+
+struct UserParams
+  include JSON::Serializable
+
+  property name : String
+  property email : String
+
+  def to_h
+    {
+      name: name,
+      email: email
+    }
+  end
+end</code></pre>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Middleware de Autenticação JWT</h3>
+                        <pre><code class="language-crystal"># src/controllers/application.cr
+require "jwt"
+
+abstract class Application < ActionController::Base
+  # JWT Configuration
+  JWT_SECRET = ENV["JWT_SECRET"] || "your-secret-key"
+  JWT_ALGORITHM = JWT::Algorithm::HS256
+
+  # Estrutura do payload JWT
+  struct JWTPayload
+    include JSON::Serializable
+
+    property user_id : Int32
+    property email : String
+    property exp : Int64
+    property iat : Int64
+
+    def initialize(@user_id : Int32, @email : String, expires_in : Time::Span = 24.hours)
+      @iat = Time.utc.to_unix
+      @exp = (Time.utc + expires_in).to_unix
+    end
+  end
+
+  # Middleware de autenticação
+  @[AC::Route::Filter(:before_action, except: [:login, :register])]
+  def authenticate_user
+    token = request.headers["Authorization"]?.try(&.sub(/^Bearer\s/, ""))
+    raise AC::Error::Unauthorized.new("Token não fornecido") unless token
+
+    begin
+      payload, _ = JWT.decode(token, JWT_SECRET, JWT_ALGORITHM)
+      @current_user_id = payload["user_id"].as_i
+      @current_user_email = payload["email"].as_s
+
+      # Verificar se usuário ainda existe
+      User.find!(@current_user_id.not_nil!)
+    rescue JWT::ExpiredSignatureError
+      raise AC::Error::Unauthorized.new("Token expirado")
+    rescue JWT::DecodeError | PgORM::Error::RecordNotFound
+      raise AC::Error::Unauthorized.new("Token inválido")
+    end
+  end
+
+  # Gerar token JWT
+  def generate_jwt_token(user : User) : String
+    payload = JWTPayload.new(user.id, user.email)
+    JWT.encode(payload.to_json, JWT_SECRET, JWT_ALGORITHM)
+  end
+
+  # Obter usuário atual
+  def current_user : User
+    User.find!(@current_user_id.not_nil!)
+  end
+
+  # Rate limiting por usuário
+  USER_RATE_LIMITS = Hash(Int32, Array(Time)).new { |h, k| h[k] = [] of Time }
+  MAX_REQUESTS_PER_MINUTE = 60
+
+  @[AC::Route::Filter(:before_action)]
+  def rate_limit_user
+    return unless @current_user_id
+
+    user_id = @current_user_id.not_nil!
+    now = Time.utc
+    minute_ago = now - 1.minute
+
+    # Limpar requests antigos
+    USER_RATE_LIMITS[user_id].reject! { |time| time < minute_ago }
+
+    # Verificar limite
+    if USER_RATE_LIMITS[user_id].size >= MAX_REQUESTS_PER_MINUTE
+      response.headers["X-RateLimit-Limit"] = MAX_REQUESTS_PER_MINUTE.to_s
+      response.headers["X-RateLimit-Remaining"] = "0"
+      response.headers["X-RateLimit-Reset"] = (now + 1.minute).to_unix.to_s
+      raise AC::Error::TooManyRequests.new("Rate limit excedido")
+    end
+
+    # Adicionar request atual
+    USER_RATE_LIMITS[user_id] << now
+
+    # Headers informativos
+    remaining = MAX_REQUESTS_PER_MINUTE - USER_RATE_LIMITS[user_id].size
+    response.headers["X-RateLimit-Limit"] = MAX_REQUESTS_PER_MINUTE.to_s
+    response.headers["X-RateLimit-Remaining"] = remaining.to_s
+    response.headers["X-RateLimit-Reset"] = (now + 1.minute).to_unix.to_s
+  end
+end</code></pre>
+                    </div>
+                </div>
+
+                <div class="example-category">
+                    <h2>🗄️ Trabalhando com PostgreSQL</h2>
+
+                    <div class="subsection">
+                        <h3>Migrações e Schema</h3>
+                        <pre><code class="language-crystal"># db/migrations/001_create_users.sql
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    avatar_url TEXT,
+    metadata JSONB DEFAULT '{}',
+    tags TEXT[] DEFAULT '{}',
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_users_active ON users(is_active);
+CREATE INDEX idx_users_tags ON users USING GIN(tags);
+CREATE INDEX idx_users_metadata ON users USING GIN(metadata);
+
+# db/migrations/002_create_posts.sql
+CREATE TABLE posts (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL,
+    published_at TIMESTAMP,
+    view_count INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX idx_posts_user_id ON posts(user_id);
+CREATE INDEX idx_posts_published ON posts(published_at) WHERE published_at IS NOT NULL;</code></pre>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Repository Pattern com Crystal-PG</h3>
+                        <pre><code class="language-crystal"># src/repositories/user_repository.cr
+require "db"
+require "pg"
+
+class UserRepository
+  @db : DB::Database
+
+  def initialize(@db : DB::Database)
+  end
+
+  def self.new
+    new(DB.open(DATABASE_URL))
+  end
+
+  # Buscar usuário por email com cache
+  def find_by_email(email : String) : UserData?
+    cache_key = "user:email:#{email}"
+
+    # Tentar cache primeiro
+    if cached = Redis.get(cache_key)
+      return UserData.from_json(cached)
+    end
+
+    # Buscar no banco
+    @db.query_one?(
+      "SELECT id, name, email, avatar_url, metadata, created_at FROM users WHERE email = $1",
+      email
+    ) do |rs|
+      user = UserData.new(
+        id: rs.read(Int32),
+        name: rs.read(String),
+        email: rs.read(String),
+        avatar_url: rs.read(String?),
+        metadata: rs.read(JSON::Any),
+        created_at: rs.read(Time)
+      )
+
+      # Cachear por 5 minutos
+      Redis.setex(cache_key, 300, user.to_json)
+      user
+    end
+  end
+
+  # Busca com paginação e filtros
+  def search(
+    query : String? = nil,
+    tags : Array(String)? = nil,
+    is_active : Bool? = nil,
+    page : Int32 = 1,
+    per_page : Int32 = 20
+  ) : {users: Array(UserData), total: Int32}
+
+    conditions = [] of String
+    params = [] of DB::Any
+    param_index = 0
+
+    # Construir condições WHERE dinamicamente
+    if query
+      param_index += 1
+      conditions << "(name ILIKE $#{param_index} OR email ILIKE $#{param_index})"
+      params << "%#{query}%"
+    end
+
+    if tags && !tags.empty?
+      param_index += 1
+      conditions << "tags && $#{param_index}"
+      params << tags
+    end
+
+    if is_active != nil
+      param_index += 1
+      conditions << "is_active = $#{param_index}"
+      params << is_active
+    end
+
+    where_clause = conditions.empty? ? "" : "WHERE #{conditions.join(" AND ")}"
+
+    # Contar total
+    count_sql = "SELECT COUNT(*) FROM users #{where_clause}"
+    total = @db.scalar(count_sql, args: params).as(Int64).to_i
+
+    # Buscar dados com paginação
+    offset = (page - 1) * per_page
+    params << per_page << offset
+
+    data_sql = """
+      SELECT id, name, email, avatar_url, metadata, created_at
+      FROM users #{where_clause}
+      ORDER BY created_at DESC
+      LIMIT $#{param_index + 1} OFFSET $#{param_index + 2}
+    """
+
+    users = @db.query_all(data_sql, args: params) do |rs|
+      UserData.new(
+        id: rs.read(Int32),
+        name: rs.read(String),
+        email: rs.read(String),
+        avatar_url: rs.read(String?),
+        metadata: rs.read(JSON::Any),
+        created_at: rs.read(Time)
+      )
+    end
+
+    {users: users, total: total}
+  end
+
+  # Transação com múltiplas operações
+  def create_user_with_profile(user_params : Hash, profile_params : Hash) : UserData
+    @db.transaction do |tx|
+      # Criar usuário
+      user_id = tx.connection.scalar("""
+        INSERT INTO users (name, email, password_hash)
+        VALUES ($1, $2, $3)
+        RETURNING id
+      """, user_params[:name], user_params[:email], user_params[:password_hash]).as(Int32)
+
+      # Criar perfil
+      tx.connection.exec("""
+        INSERT INTO user_profiles (user_id, bio, avatar_url)
+        VALUES ($1, $2, $3)
+      """, user_id, profile_params[:bio], profile_params[:avatar_url])
+
+      # Retornar usuário criado
+      tx.connection.query_one("""
+        SELECT u.id, u.name, u.email, p.avatar_url,
+               jsonb_build_object('bio', p.bio) as metadata, u.created_at
+        FROM users u
+        JOIN user_profiles p ON p.user_id = u.id
+        WHERE u.id = $1
+      """, user_id) do |rs|
+        UserData.new(
+          id: rs.read(Int32),
+          name: rs.read(String),
+          email: rs.read(String),
+          avatar_url: rs.read(String?),
+          metadata: rs.read(JSON::Any),
+          created_at: rs.read(Time)
+        )
+      end
+    end
+  end
+
+  # Bulk operations
+  def bulk_update_tags(user_ids : Array(Int32), tags : Array(String))
+    placeholders = user_ids.map_with_index { |_, i| "$#{i + 2}" }.join(",")
+
+    @db.exec(
+      "UPDATE users SET tags = $1 WHERE id IN (#{placeholders})",
+      tags, *user_ids
+    )
+  end
+end
+
+struct UserData
+  include JSON::Serializable
+
+  property id : Int32
+  property name : String
+  property email : String
+  property avatar_url : String?
+  property metadata : JSON::Any
+  property created_at : Time
+end</code></pre>
+                    </div>
+                </div>
+
+                <div class="example-category">
+                    <h2>⚡ WebSockets e Real-time</h2>
+
+                    <div class="subsection">
+                        <h3>Chat em Tempo Real</h3>
+                        <pre><code class="language-crystal"># src/controllers/chat_controller.cr
+class ChatController < Application
+  # Store de conexões por sala
+  ROOM_CONNECTIONS = Hash(String, Set(HTTP::WebSocket)).new { |h, k| h[k] = Set(HTTP::WebSocket).new }
+  USER_CONNECTIONS = Hash(String, HTTP::WebSocket).new
+
+  @[AC::Route::WebSocket("/chat/:room_id")]
+  def chat(socket, room_id : String)
+    user = current_user_from_socket(socket)
+    return unless user
+
+    # Adicionar à sala
+    ROOM_CONNECTIONS[room_id] << socket
+    USER_CONNECTIONS[user.email] = socket
+
+    # Notificar entrada na sala
+    broadcast_to_room(room_id, {
+      type: "user_joined",
+      user: user.name,
+      message: "#{user.name} entrou na sala",
+      timestamp: Time.utc.to_unix
+    }, exclude: socket)
+
+    # Handler de mensagens
+    socket.on_message do |message|
+      begin
+        data = JSON.parse(message)
+
+        case data["type"].as_s
+        when "chat_message"
+          handle_chat_message(room_id, user, data, socket)
+        when "typing"
+          handle_typing_indicator(room_id, user, data, socket)
+        when "file_upload"
+          handle_file_upload(room_id, user, data, socket)
+        end
+      rescue JSON::ParseException
+        socket.send({error: "Formato de mensagem inválido"}.to_json)
+      end
+    end
+
+    # Handler de desconexão
+    socket.on_close do
+      ROOM_CONNECTIONS[room_id].delete(socket)
+      USER_CONNECTIONS.delete(user.email)
+
+      # Notificar saída
+      broadcast_to_room(room_id, {
+        type: "user_left",
+        user: user.name,
+        message: "#{user.name} saiu da sala",
+        timestamp: Time.utc.to_unix
+      })
+
+      # Limpar sala vazia
+      if ROOM_CONNECTIONS[room_id].empty?
+        ROOM_CONNECTIONS.delete(room_id)
+      end
+    end
+  end
+
+  private def handle_chat_message(room_id : String, user : User, data : JSON::Any, sender : HTTP::WebSocket)
+    message_content = data["content"].as_s.strip
+    return if message_content.empty?
+
+    # Salvar no banco
+    message = ChatMessage.create!(
+      room_id: room_id,
+      user_id: user.id,
+      content: message_content,
+      message_type: "text"
+    )
+
+    # Broadcast para todos na sala
+    broadcast_to_room(room_id, {
+      type: "chat_message",
+      id: message.id,
+      user_id: user.id,
+      user_name: user.name,
+      content: message_content,
+      timestamp: message.created_at.to_unix
+    })
+  end
+
+  private def handle_typing_indicator(room_id : String, user : User, data : JSON::Any, sender : HTTP::WebSocket)
+    is_typing = data["is_typing"].as_bool
+
+    broadcast_to_room(room_id, {
+      type: "typing",
+      user_id: user.id,
+      user_name: user.name,
+      is_typing: is_typing
+    }, exclude: sender)
+  end
+
+  private def broadcast_to_room(room_id : String, message : Hash, exclude : HTTP::WebSocket? = nil)
+    json_message = message.to_json
+
+    ROOM_CONNECTIONS[room_id].each do |socket|
+      next if socket == exclude
+
+      begin
+        socket.send(json_message)
+      rescue
+        # Remover conexão inválida
+        ROOM_CONNECTIONS[room_id].delete(socket)
+      end
+    end
+  end
+
+  private def current_user_from_socket(socket : HTTP::WebSocket) : User?
+    # Extrair token do header ou query param
+    token = socket.request.headers["Authorization"]?.try(&.sub(/^Bearer\s/, ""))
+    return nil unless token
+
+    begin
+      payload, _ = JWT.decode(token, JWT_SECRET, JWT_ALGORITHM)
+      user_id = payload["user_id"].as_i
+      User.find(user_id)
+    rescue
+      nil
+    end
+  end
+end
+
+# Modelo de mensagem
+class ChatMessage < PgORM::Base
+  attribute id : Int32, primary_key: true
+  attribute room_id : String
+  attribute user_id : Int32
+  attribute content : String
+  attribute message_type : String = "text"
+  attribute created_at : Time = Time.utc
+
+  belongs_to :user, User
+end</code></pre>
+                    </div>
+                </div>
+
+                <div class="example-category">
+                    <h2>📊 Background Jobs com Mosquito</h2>
+
+                    <div class="subsection">
+                        <h3>Sistema de Jobs Assíncronos</h3>
+                        <pre><code class="language-crystal"># src/jobs/email_job.cr
+require "mosquito"
+
+class EmailJob < Mosquito::PeriodicJob
+  run_every 30.seconds
+
+  def perform
+    # Processar emails pendentes
+    pending_emails = EmailQueue.where(status: "pending").limit(10).to_a
+
+    pending_emails.each do |email|
+      begin
+        send_email(email)
+        email.update!(status: "sent", sent_at: Time.utc)
+      rescue ex
+        email.update!(
+          status: "failed",
+          error_message: ex.message,
+          retry_count: email.retry_count + 1
+        )
+
+        # Reagendar se não excedeu limite de tentativas
+        if email.retry_count < 3
+          EmailJob.new.delay(1.hour).perform
+        end
+      end
+    end
+  end
+
+  private def send_email(email : EmailQueue)
+    # Integração com provedor de email (SendGrid, etc.)
+    puts "Enviando email para #{email.recipient}: #{email.subject}"
+  end
+end
+
+# Job de processamento de uploads
+class ImageProcessingJob < Mosquito::QueuedJob
+  param file_path : String
+  param user_id : Int32
+  param processing_options : Hash(String, String)
+
+  def perform
+    puts "Processando imagem: #{file_path}"
+
+    begin
+      # Redimensionar imagens
+      create_thumbnails(file_path)
+
+      # Otimizar para web
+      optimize_image(file_path)
+
+      # Upload para CDN
+      cdn_url = upload_to_cdn(file_path)
+
+      # Atualizar banco de dados
+      upload = Upload.find_by_path!(file_path)
+      upload.update!(
+        status: "processed",
+        cdn_url: cdn_url,
+        processed_at: Time.utc
+      )
+
+      # Notificar usuário via WebSocket
+      notify_user_processing_complete(user_id, upload)
+
+    rescue ex
+      handle_processing_error(file_path, ex.message)
+    end
+  end
+
+  private def create_thumbnails(file_path : String)
+    sizes = processing_options["sizes"]?.try(&.split(",")) || ["150x150", "300x300"]
+
+    sizes.each do |size|
+      # Usar ImageMagick ou similar
+      system("convert #{file_path} -resize #{size} #{file_path.sub(".jpg", "_#{size}.jpg")}")
+    end
+  end
+
+  private def notify_user_processing_complete(user_id : Int32, upload : Upload)
+    if socket = ChatController::USER_CONNECTIONS[user_id.to_s]?
+      socket.send({
+        type: "upload_processed",
+        upload_id: upload.id,
+        cdn_url: upload.cdn_url
+      }.to_json)
+    end
+  end
+end
+
+# Configuração do Mosquito
+Mosquito.configure do |settings|
+  settings.redis_url = ENV["REDIS_URL"] || "redis://localhost:6379"
+  settings.idle_wait = 0.5.seconds
+end
+
+# Registrar jobs
+Mosquito::Queue.register_worker(EmailJob.new)
+Mosquito::Queue.register_worker(ImageProcessingJob.new)</code></pre>
+                    </div>
+                </div>
+
+                <div class="example-category">
+                    <h2>🛠️ Utilitários e Helpers</h2>
+
+                    <div class="subsection">
+                        <h3>Validações Customizadas</h3>
+                        <pre><code class="language-crystal"># src/validators/custom_validators.cr
+module CustomValidators
+  # Validador de CPF brasileiro
+  def self.valid_cpf?(cpf : String) : Bool
+    # Remove formatação
+    cpf = cpf.gsub(/\D/, "")
+    return false if cpf.size != 11
+    return false if cpf.chars.all? { |c| c == cpf[0] }
+
+    # Calcula dígitos verificadores
+    sum = (0..8).sum { |i| cpf[i].to_i * (10 - i) }
+    remainder = sum % 11
+    check1 = remainder < 2 ? 0 : 11 - remainder
+
+    sum = (0..9).sum { |i| cpf[i].to_i * (11 - i) }
+    remainder = sum % 11
+    check2 = remainder < 2 ? 0 : 11 - remainder
+
+    cpf[9].to_i == check1 && cpf[10].to_i == check2
+  end
+
+  # Validador de senha forte
+  def self.strong_password?(password : String) : Bool
+    return false if password.size < 8
+
+    has_lowercase = password.matches?(/[a-z]/)
+    has_uppercase = password.matches?(/[A-Z]/)
+    has_digit = password.matches?(/\d/)
+    has_special = password.matches?(/[!@#$%^&*(),.?":{}|<>]/)
+
+    [has_lowercase, has_uppercase, has_digit, has_special].count(true) >= 3
+  end
+
+  # Validador de telefone brasileiro
+  def self.valid_phone?(phone : String) : Bool
+    phone = phone.gsub(/\D/, "")
+    phone.matches?(/^(\d{2})9?\d{8}$/)
+  end
+end
+
+# Usar nas validações dos modelos
+class User < PgORM::Base
+  # ... outros atributos ...
+
+  validates :cpf, &->CustomValidators.valid_cpf?(String)
+  validates :password, &->CustomValidators.strong_password?(String)
+  validates :phone, &->CustomValidators.valid_phone?(String)
+end</code></pre>
+                    </div>
+
+                    <div class="subsection">
+                        <h3>Cache com Redis</h3>
+                        <pre><code class="language-crystal"># src/services/cache_service.cr
+require "redis"
+
+class CacheService
+  @redis : Redis
+
+  def initialize(@redis : Redis)
+  end
+
+  def self.instance
+    @@instance ||= new(Redis.new(url: ENV["REDIS_URL"] || "redis://localhost:6379"))
+  end
+
+  # Cache com TTL
+  def cache(key : String, ttl : Time::Span = 1.hour, &block)
+    cached = @redis.get(key)
+
+    if cached
+      JSON.parse(cached)
+    else
+      result = yield
+      @redis.setex(key, ttl.total_seconds.to_i, result.to_json)
+      result
+    end
+  end
+
+  # Cache de queries SQL caras
+  def cache_query(sql : String, params : Array, ttl : Time::Span = 5.minutes, &block)
+    cache_key = "query:#{Digest::SHA256.hexdigest("#{sql}:#{params.join(":")}")}"
+    cache(cache_key, ttl) { yield }
+  end
+
+  # Invalidar cache por padrão
+  def invalidate_pattern(pattern : String)
+    keys = @redis.keys(pattern)
+    @redis.del(keys) unless keys.empty?
+  end
+
+  # Cache de contadores
+  def increment_counter(key : String, ttl : Time::Span = 1.day) : Int32
+    result = @redis.incr(key)
+    @redis.expire(key, ttl.total_seconds.to_i) if result == 1
+    result.as(Int32)
+  end
+
+  # Rate limiting
+  def rate_limit(key : String, limit : Int32, window : Time::Span) : Bool
+    current = @redis.incr(key)
+    @redis.expire(key, window.total_seconds.to_i) if current == 1
+    current <= limit
+  end
+end
+
+# Uso em controllers
+class UsersController < Application
+  def expensive_report
+    CacheService.instance.cache("user_report:#{Date.utc}", 1.hour) do
+      # Query cara que demora para executar
+      User.joins(:posts)
+          .group(:user_id)
+          .group_count
+          .to_h
+    end
+  end
+end</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Crystal Guide. Criado com ❤️ para a comunidade Crystal.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
