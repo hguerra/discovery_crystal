@@ -32,7 +32,7 @@
     "test": {
       "inputs": ["default", "^production"],
       "outputs": [],
-      "dependsOn": [],
+      "dependsOn": ["build"],
       "cache": true,
       "executor": "nx:run-commands",
       "options": {
@@ -78,6 +78,18 @@
         "cwd": "{projectRoot}",
         "commands": [
           "../../dist/services/service-b"
+        ]
+      }
+    },
+    "dev-watch": {
+      "inputs": ["default"],
+      "outputs": [],
+      "cache": false,
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": [
+          "../../bin/air"
         ]
       }
     }

@@ -53,6 +53,10 @@ help:
 	@echo "Note: All commands use Nx features (cache, affected, parallel execution)"
 
 # Individual service commands (with Nx cache)
+install-air:
+	mkdir -p ./bin
+	curl -sSfL https://raw.githubusercontent.com/air-verse/air/master/install.sh | sh -s
+
 install-service-a:
 	./nx run service-a:install
 
@@ -86,13 +90,13 @@ dev-service-b:
 
 # Nx Watch commands (hot reload)
 dev-watch-a:
-	./nx watch --projects=service-a --includeDependentProjects -- ./nx run-many -t build -p \$$NX_PROJECT_NAME --exclude=service-a
+	./nx run service-a:dev-watch
 
 dev-watch-b:
-	./nx watch --projects=service-b --includeDependentProjects -- ./nx run-many -t build -p \$$NX_PROJECT_NAME --exclude=service-b
+	./nx run service-b:dev-watch
 
 dev-watch-all:
-	./nx watch --all -- ./nx run-many -t build -p \$$NX_PROJECT_NAME
+	./nx run-many --target=dev-watch --all
 
 # All services commands (with Nx cache and parallel execution)
 all-install:
@@ -136,7 +140,7 @@ ci: all-install all-test all-build
 	@echo "CI pipeline completed!"
 
 # Quick commands (most common) - aliases for convenience
-install: all-install
+install: install-air all-install
 build: all-build
 test: all-test
 clean: all-clean
