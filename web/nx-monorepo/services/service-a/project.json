@@ -1,0 +1,72 @@
+{
+  "root": "services/service-a/",
+  "sourceRoot": "services/service-a/src",
+  "projectType": "application",
+  "tags": ["scope:myteam"],
+  "name": "service-a",
+  "metadata": {
+    "description": "This is the service-a application"
+  },
+  "namedInputs": {
+    "default": [
+      "{projectRoot}/**/*"
+    ],
+    "production": [
+      "default",
+      "!{projectRoot}/spec/**/*"
+    ]
+  },
+  "targets": {
+    "install": {
+      "inputs": ["default"],
+      "outputs": [],
+      "cache": true,
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": [
+          "shards install"
+        ]
+      }
+    },
+    "test": {
+      "inputs": ["default", "^production"],
+      "outputs": [],
+      "dependsOn": [],
+      "cache": true,
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": [
+          "crystal spec"
+        ]
+      }
+    },
+    "build": {
+      "inputs": ["production", "^production"],
+      "outputs": ["{workspaceRoot}/dist/service-a"],
+      "dependsOn": ["^build"],
+      "cache": true,
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": [
+          "mkdir -p ../../dist/services",
+          "crystal build -o ../../dist/services/service-a src/app.cr"
+        ],
+        "parallel": false
+      }
+    },
+    "clean": {
+      "inputs": ["default"],
+      "outputs": [],
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": [
+          "rm -rf ../../dist/services/service-a*"
+        ]
+      }
+    }
+  }
+}
