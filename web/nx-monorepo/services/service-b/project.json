@@ -67,6 +67,19 @@
           "rm -rf ../../dist/services/service-b*"
         ]
       }
+    },
+    "dev": {
+      "inputs": ["default"],
+      "outputs": [],
+      "dependsOn": ["build"],
+      "cache": false,
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "{projectRoot}",
+        "commands": [
+          "../../dist/services/service-b"
+        ]
+      }
     }
   }
 }
