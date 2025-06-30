@@ -85,6 +85,7 @@
       "inputs": ["default"],
       "outputs": [],
       "cache": false,
+      "continuous": true,
       "executor": "nx:run-commands",
       "options": {
         "cwd": "{projectRoot}",
